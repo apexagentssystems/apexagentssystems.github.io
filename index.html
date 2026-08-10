@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Apex Agents — stop losing jobs you never hear about</title>
+<meta name="description" content="We build systems that answer every enquiry, kill the data entry and chase the follow-ups for small businesses. You own it outright. Free leak audit — work out what the misses cost you, using your own numbers.">
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@500;600;700&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{--cyan:#06D7F0;--ink:#04222B;--navy:#071120;--slate:#64748B;--line:rgba(148,163,184,.22);--green:#22C55E;--amber:#FFC220;--coral:#FF5F45}
+html{scroll-behavior:smooth}
+body{font-family:'Outfit',sans-serif;background:#fff;color:var(--ink);line-height:1.55;-webkit-font-smoothing:antialiased}
+.wrap{max-width:1120px;margin:0 auto;padding:0 24px}
+a{color:inherit}
+
+/* NAV */
+nav{position:sticky;top:0;z-index:50;background:rgba(255,255,255,.94);backdrop-filter:blur(10px);border-bottom:1px solid #eef2f5}
+nav .wrap{display:flex;align-items:center;gap:14px;height:68px}
+nav .brand{display:flex;align-items:center;gap:10px;font-weight:800;font-size:19px;letter-spacing:.02em}
+nav .sp{margin-left:auto}
+.btn{display:inline-block;background:var(--ink);color:#fff;font-weight:700;font-size:16px;padding:13px 22px;border-radius:10px;text-decoration:none;border:none;cursor:pointer;font-family:inherit;transition:transform .12s ease}
+.btn:hover{transform:translateY(-1px)}
+.btn.cy{background:var(--cyan);color:var(--ink)}
+.btn.sm{padding:10px 17px;font-size:15px}
+
+/* HERO */
+header{background:var(--cyan);padding:76px 0 84px;position:relative;overflow:hidden}
+header h1{font-size:clamp(38px,6.2vw,70px);line-height:1.02;font-weight:900;letter-spacing:-.035em;max-width:15ch}
+header p.lede{font-size:clamp(18px,2.3vw,24px);font-weight:600;color:#04343F;margin-top:22px;max-width:52ch}
+header .cta{margin-top:34px;display:flex;gap:12px;flex-wrap:wrap;align-items:center}
+header .micro{font-size:15px;font-weight:600;color:#04343F;margin-top:16px}
+.hgrid{display:grid;grid-template-columns:1.15fr .85fr;gap:44px;align-items:center}
+@media(max-width:860px){.hgrid{grid-template-columns:1fr}}
+.chatcard{background:var(--navy);border-radius:18px;padding:26px;box-shadow:0 20px 50px rgba(4,34,43,.28)}
+.chatcard .time{font-family:'JetBrains Mono',monospace;font-size:14px;color:var(--slate);text-align:right;margin-bottom:14px}
+.bub{padding:13px 17px;border-radius:15px;font-size:16px;font-weight:600;margin-bottom:10px;max-width:92%}
+.bub.b{background:#122238;color:#E2E8F0;border:1px solid rgba(6,215,240,.25);border-bottom-left-radius:4px}
+.bub.u{background:var(--cyan);color:var(--ink);margin-left:auto;border-bottom-right-radius:4px}
+.lead{background:#0D1B2E;border:2px solid var(--green);border-radius:13px;padding:16px 18px;margin-top:14px}
+.lead .t{font-size:13px;font-weight:800;color:var(--green);letter-spacing:.09em;margin-bottom:9px}
+.lead .r{font-family:'JetBrains Mono',monospace;font-size:15px;color:#F1F5F9;line-height:1.7}
+.lead .r span{color:var(--slate)}
+
+/* SECTIONS */
+section{padding:78px 0}
+h2{font-size:clamp(29px,4vw,44px);font-weight:900;letter-spacing:-.03em;line-height:1.08}
+h2+p.sub{font-size:19px;color:#475569;margin-top:14px;max-width:60ch;font-weight:500}
+.eyebrow{font-size:14px;font-weight:800;letter-spacing:.14em;color:var(--slate);margin-bottom:12px}
+
+/* CALCULATOR */
+#audit{background:var(--navy);color:#E2E8F0}
+#audit h2{color:#fff}
+#audit p.sub{color:#94A3B8}
+.calcgrid{display:grid;grid-template-columns:1fr 1fr;gap:34px;margin-top:40px}
+@media(max-width:860px){.calcgrid{grid-template-columns:1fr}}
+.field{margin-bottom:22px}
+.field label{display:block;font-size:16px;font-weight:700;color:#CBD5E1;margin-bottom:9px}
+.field .hint{font-size:14px;color:#64748B;font-weight:500;margin-top:6px}
+.field input{width:100%;background:#122238;border:1px solid var(--line);color:#fff;font-family:inherit;font-size:19px;font-weight:700;padding:14px 16px;border-radius:11px;outline:none}
+.field input:focus{border-color:var(--cyan)}
+.result{background:#0D1B2E;border:2px solid var(--cyan);border-radius:17px;padding:30px;position:sticky;top:92px}
+.result .big{font-family:'JetBrains Mono',monospace;font-size:clamp(38px,6vw,58px);font-weight:700;color:var(--cyan);line-height:1;margin:6px 0 4px}
+.result .cap{font-size:15px;font-weight:700;color:#94A3B8;letter-spacing:.04em}
+.result .per{font-size:16px;color:#64748B;font-weight:600}
+.workings{margin-top:22px;padding-top:20px;border-top:1px solid var(--line);font-family:'JetBrains Mono',monospace;font-size:14.5px;color:#94A3B8;line-height:1.9}
+.workings b{color:#E2E8F0;font-weight:600}
+.result .note{font-size:14px;color:#64748B;margin-top:18px;line-height:1.6;font-family:'Outfit',sans-serif;font-weight:500}
+.result .btn{margin-top:20px;width:100%;text-align:center}
+
+/* WHAT WE BUILD */
+.cards{display:grid;grid-template-columns:repeat(3,1fr);gap:20px;margin-top:44px}
+@media(max-width:860px){.cards{grid-template-columns:1fr}}
+.card{border:1px solid #e6ebf0;border-radius:16px;padding:28px;transition:box-shadow .15s ease}
+.card:hover{box-shadow:0 10px 30px rgba(4,34,43,.09)}
+.card .ic{width:46px;height:46px;border-radius:11px;display:flex;align-items:center;justify-content:center;font-size:23px;margin-bottom:16px}
+.card h3{font-size:21px;font-weight:800;margin-bottom:9px}
+.card p{font-size:16.5px;color:#475569;font-weight:500}
+.card a.demo{display:inline-block;margin-top:15px;font-size:15.5px;font-weight:700;color:var(--ink);border-bottom:2px solid var(--cyan);text-decoration:none;padding-bottom:2px}
+
+/* PRICES */
+.tiers{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-top:42px}
+@media(max-width:980px){.tiers{grid-template-columns:1fr 1fr}}
+@media(max-width:560px){.tiers{grid-template-columns:1fr}}
+.tier{border:1px solid #e6ebf0;border-radius:15px;padding:24px}
+.tier.hero{border:2px solid var(--ink);position:relative}
+.tier .flag{position:absolute;top:-11px;left:22px;background:var(--ink);color:#fff;font-size:12px;font-weight:800;letter-spacing:.09em;padding:4px 11px;border-radius:5px}
+.tier .nm{font-size:14px;font-weight:800;letter-spacing:.1em;color:var(--slate);margin-bottom:9px}
+.tier .pr{font-size:32px;font-weight:900;letter-spacing:-.02em}
+.tier .pr span{font-size:16px;font-weight:700;color:var(--slate)}
+.tier p{font-size:15.5px;color:#475569;margin-top:11px;font-weight:500}
+
+/* HONESTY */
+#honest{background:#F6F9FB}
+.rules{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:36px}
+@media(max-width:760px){.rules{grid-template-columns:1fr}}
+.rule{display:flex;gap:13px;align-items:flex-start;background:#fff;border:1px solid #e6ebf0;border-radius:13px;padding:19px 21px}
+.rule .tick{color:var(--green);font-weight:900;font-size:19px;line-height:1.3;flex:none}
+.rule div strong{display:block;font-size:17px;font-weight:800;margin-bottom:3px}
+.rule div span{font-size:15.5px;color:#475569;font-weight:500}
+
+/* FINAL */
+#final{background:var(--ink);color:#fff;text-align:center}
+#final h2{color:#fff}
+#final p{color:#94A3B8;font-size:19px;margin-top:14px;font-weight:500}
+#final .btn{margin-top:28px}
+#final .em{margin-top:20px;font-family:'JetBrains Mono',monospace;font-size:17px;color:var(--cyan)}
+
+footer{padding:34px 0;font-size:14.5px;color:var(--slate);border-top:1px solid #eef2f5}
+footer .wrap{display:flex;gap:12px;flex-wrap:wrap;align-items:center}
+footer .sp{margin-left:auto}
+</style>
+</head>
+<body>
+
+<nav><div class="wrap">
+  <div class="brand">
+    <svg width="30" height="30" viewBox="0 0 100 100" fill="none"><path d="M18 82 L50 26 L82 82" stroke="#04222B" stroke-width="9" stroke-linejoin="round" stroke-linecap="round"/><path d="M37.5 82 L50 60 L62.5 82" stroke="#04222B" stroke-width="9" stroke-linejoin="round" stroke-linecap="round"/><circle cx="50" cy="13" r="6.5" fill="#04222B"/></svg>
+    APEX AGENTS
+  </div>
+  <div class="sp"></div>
+  <a class="btn cy sm" href="#audit">Free leak audit</a>
+</div></nav>
+
+<header><div class="wrap hgrid">
+  <div>
+    <h1>The jobs you lose are the ones you never hear about.</h1>
+    <p class="lede">We build systems that answer every enquiry, read your paperwork and chase the follow-ups — so nothing slips while you're busy doing the actual work.</p>
+    <div class="cta">
+      <a class="btn" href="#audit">See what you're losing →</a>
+      <a class="btn cy" href="#build">What we build</a>
+    </div>
+    <p class="micro">Free, takes 60 seconds, uses your numbers — not our guesses.</p>
+  </div>
+  <div class="chatcard">
+    <div class="time">11:47pm</div>
+    <div class="bub b">Boiler's leaking — are you open?</div>
+    <div class="bub u">Yes. Emergency slot tonight?</div>
+    <div class="bub b">Booked. Name &amp; number?</div>
+    <div class="lead">
+      <div class="t">✓ NEW LEAD CAPTURED</div>
+      <div class="r"><span>name&nbsp;&nbsp;</span>Dan Carter</div>
+      <div class="r"><span>tel&nbsp;&nbsp;&nbsp;&nbsp;</span>07700 900123</div>
+      <div class="r"><span>job&nbsp;&nbsp;&nbsp;&nbsp;</span>Urgent · M4 1AB</div>
+    </div>
+  </div>
+</div></header>
+
+<section id="audit"><div class="wrap">
+  <div class="eyebrow">FREE LEAK AUDIT</div>
+  <h2>Work out what the misses actually cost you.</h2>
+  <p class="sub">Three numbers you already know. No sign-up, nothing sent anywhere — the maths happens on your own screen, and you can check every line of it.</p>
+
+  <div class="calcgrid">
+    <div>
+      <div class="field">
+        <label for="enq">Enquiries you get in a typical month</label>
+        <input id="enq" type="number" min="0" value="60" inputmode="numeric">
+        <div class="hint">Calls, forms, messages — everything.</div>
+      </div>
+      <div class="field">
+        <label for="miss">Roughly how many go unanswered or unreturned?</label>
+        <input id="miss" type="number" min="0" value="12" inputmode="numeric">
+        <div class="hint">Evenings, weekends, while you're on a job, voicemails you never got back to.</div>
+      </div>
+      <div class="field">
+        <label for="val">Average value of one job (£)</label>
+        <input id="val" type="number" min="0" value="180" inputmode="numeric">
+      </div>
+      <div class="field">
+        <label for="conv">Of the enquiries you DO answer, how many become jobs? (%)</label>
+        <input id="conv" type="number" min="0" max="100" value="40" inputmode="numeric">
+      </div>
+    </div>
+
+    <div class="result">
+      <div class="cap">MISSED ENQUIRIES ARE COSTING YOU ROUGHLY</div>
+      <div class="big" id="out">£864</div>
+      <div class="per">per month · <span id="outy">£10,368</span> a year</div>
+      <div class="workings" id="work"></div>
+      <p class="note">This is your own arithmetic, not an estimate we invented: missed enquiries × the rate you already convert at × what a job is worth to you. If the numbers look small, an agent probably isn't worth your money yet — and we'll tell you that.</p>
+      <a class="btn cy" id="mail" href="#">Send me the fix →</a>
+    </div>
+  </div>
+</div></section>
+
+<section id="build"><div class="wrap">
+  <div class="eyebrow">WHAT WE BUILD</div>
+  <h2>Three things that pay for themselves, or we say so.</h2>
+  <p class="sub">Built for your business, in your words, on your workflow. You get the source code — no monthly software fee, no lock-in, nothing to rent forever.</p>
+
+  <div class="cards">
+    <div class="card">
+      <div class="ic" style="background:#E0FBFF">💬</div>
+      <h3>Answer every enquiry</h3>
+      <p>Something on your site that talks to visitors at 2am, asks the right questions, and drops a qualified lead straight into your inbox or phone.</p>
+      <a class="demo" href="https://apexagentssystems.github.io/leadagent-demo/" target="_blank" rel="noopener">Try the live demo →</a>
+    </div>
+    <div class="card">
+      <div class="ic" style="background:#FFF6DC">📄</div>
+      <h3>Kill the data entry</h3>
+      <p>Send invoices and receipts in, get checked figures out. It back-calculates the VAT, flags anything odd for a human, and blocks the invoice that arrives twice.</p>
+      <a class="demo" href="https://apexagentssystems.github.io/docagent-demo/" target="_blank" rel="noopener">Try the live demo →</a>
+    </div>
+    <div class="card">
+      <div class="ic" style="background:#F0FFE0">⭐</div>
+      <h3>Reply to everyone</h3>
+      <p>Reviews answered in your voice within the hour, the angry ones flagged for you personally. Same engine, retuned for whatever industry you're in.</p>
+      <a class="demo" href="https://apexagentssystems.github.io/reviewagent-demo/" target="_blank" rel="noopener">Try the live demo →</a>
+    </div>
+  </div>
+</div></section>
+
+<section style="padding-top:0"><div class="wrap">
+  <div class="eyebrow">WHAT IT COSTS</div>
+  <h2>Priced so you can start small.</h2>
+  <p class="sub">Every price is fixed before we begin. No hourly billing, no surprises at the end.</p>
+  <div class="tiers">
+    <div class="tier">
+      <div class="nm">WE INSTALL IT</div>
+      <div class="pr">£69</div>
+      <p>We put a working enquiry agent on your site. One page, one revision, you do nothing. Working on your site or you don't pay.</p>
+    </div>
+    <div class="tier hero">
+      <div class="flag">MOST POPULAR</div>
+      <div class="nm">DONE IN 48</div>
+      <div class="pr">£299</div>
+      <p>One agent, built on your workflow, live within 48 hours. Working in two days or you don't pay.</p>
+    </div>
+    <div class="tier">
+      <div class="nm">LEAD MACHINE</div>
+      <div class="pr">£1,950</div>
+      <p>The full path: capture, qualify, route to your phone, chase the quiet ones, dashboard. You approve it working before the balance is due.</p>
+    </div>
+    <div class="tier">
+      <div class="nm">CARE</div>
+      <div class="pr">£199<span>/mo</span></div>
+      <p>We watch it daily, fix breaks before you notice, improve one thing a month. Cancel any month, keep the code.</p>
+    </div>
+  </div>
+</div></section>
+
+<section id="honest"><div class="wrap">
+  <div class="eyebrow">HOW WE WORK</div>
+  <h2>The rules we hold ourselves to.</h2>
+  <p class="sub">We're new, and we'd rather tell you that than fake a decade of testimonials. Here's what we do instead.</p>
+  <div class="rules">
+    <div class="rule"><div class="tick">✓</div><div><strong>No invented clients or reviews</strong><span>Every demo on this site is our own build, labelled as such. When we have real client results, you'll see their names.</span></div></div>
+    <div class="rule"><div class="tick">✓</div><div><strong>We turn work down</strong><span>If the maths says an agent won't earn its cost at your size, we'll tell you and charge you nothing for saying so.</span></div></div>
+    <div class="rule"><div class="tick">✓</div><div><strong>You own it outright</strong><span>Source code handed over on delivery. Nothing to rent, no hostage-taking, walk away whenever you like.</span></div></div>
+    <div class="rule"><div class="tick">✓</div><div><strong>Nothing fails quietly</strong><span>Every agent we build shouts if it stops working. Silent breakage is the thing we're paid to prevent.</span></div></div>
+    <div class="rule"><div class="tick">✓</div><div><strong>A win in the first ten minutes</strong><span>You see it working on your own business before you're asked for the rest of the money.</span></div></div>
+    <div class="rule"><div class="tick">✓</div><div><strong>Refunds without a fight</strong><span>One sentence by email. No forms, no retention call, no argument.</span></div></div>
+  </div>
+</div></section>
+
+<section id="final"><div class="wrap">
+  <h2>Start with the free audit.</h2>
+  <p>Sixty seconds, your own numbers, and an honest answer about whether we can help.</p>
+  <a class="btn cy" href="#audit">Work out my leak →</a>
+  <div class="em">info@apexagentsystems.co</div>
+</div></section>
+
+<footer><div class="wrap">
+  <div>© 2026 Apex Agents · United Kingdom</div>
+  <div class="sp"></div>
+  <div>More jobs, less admin, for small businesses · info@apexagentsystems.co</div>
+</div></footer>
+
+<script>
+const $ = id => document.getElementById(id);
+const gbp = n => '£' + Math.round(n).toLocaleString('en-GB');
+
+function calc(){
+  const enq  = Math.max(0, +$('enq').value  || 0);
+  const miss = Math.min(Math.max(0, +$('miss').value || 0), enq);
+  const val  = Math.max(0, +$('val').value  || 0);
+  const conv = Math.min(Math.max(0, +$('conv').value || 0), 100);
+
+  const jobsLost   = miss * (conv/100);
+  const monthly    = jobsLost * val;
+  const yearly     = monthly * 12;
+
+  $('out').textContent  = gbp(monthly);
+  $('outy').textContent = gbp(yearly);
+
+  $('work').innerHTML =
+    '<b>' + miss + '</b> missed enquiries<br>' +
+    '× <b>' + conv + '%</b> you already convert<br>' +
+    '= <b>' + (Math.round(jobsLost*10)/10) + '</b> jobs lost a month<br>' +
+    '× <b>' + gbp(val) + '</b> a job<br>' +
+    '= <b>' + gbp(monthly) + '</b> a month';
+
+  const body =
+    'Here are my numbers from the leak audit:%0D%0A%0D%0A' +
+    'Enquiries a month: ' + enq + '%0D%0A' +
+    'Missed / unreturned: ' + miss + '%0D%0A' +
+    'Average job value: £' + val + '%0D%0A' +
+    'Conversion on answered enquiries: ' + conv + '%25%0D%0A%0D%0A' +
+    'That works out at about £' + Math.round(monthly) + ' a month (£' + Math.round(yearly) + ' a year).%0D%0A%0D%0A' +
+    'My business: %0D%0AMy website: %0D%0A%0D%0AWhat would you suggest?';
+  $('mail').href = 'mailto:info@apexagentsystems.co?subject=Leak%20audit%20-%20my%20numbers&body=' + body;
+}
+['enq','miss','val','conv'].forEach(id => $(id).addEventListener('input', calc));
+calc();
+</script>
+
+<div style="background:#050c17;color:#5A6B80;font-family:'Outfit',system-ui,sans-serif;font-size:12.5px;line-height:1.6;padding:18px 24px;text-align:center">
+  Apex Agents is a trading name of <b style="color:#7C8BA1">[PROPRIETOR NAME]</b>.
+  Correspondence address: <b style="color:#7C8BA1">[SERVICE ADDRESS]</b>.
+  Contact: <a href="mailto:info@apexagentsystems.co" style="color:#5A6B80">info@apexagentsystems.co</a>
+</div>
+</body>
+</html>

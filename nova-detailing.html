@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Nova Detailing — enquiry assistant demo</title>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@600&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{--brand:#111827;--ink:#0F172A;--slate:#64748B}
+body{font-family:'Outfit',sans-serif;color:var(--ink);background:#fff;line-height:1.55}
+.wrap{max-width:1080px;margin:0 auto;padding:0 22px}
+.banner{background:#0F172A;color:#fff;padding:13px 0;font-size:14.5px;text-align:center}
+.banner b{color:var(--brand)}
+.top{display:flex;align-items:center;gap:12px;padding:18px 0;border-bottom:1px solid #eef2f6}
+.logo{width:38px;height:38px;border-radius:9px;background:var(--brand);display:flex;align-items:center;justify-content:center;color:#fff;font-weight:900;font-size:17px}
+.bizname{font-weight:800;font-size:19px}
+.top .nav{margin-left:auto;display:flex;gap:22px;font-size:15px;color:var(--slate);font-weight:600}
+@media(max-width:640px){.top .nav{display:none}}
+.hero{padding:60px 0 54px;display:grid;grid-template-columns:1.1fr .9fr;gap:40px;align-items:center}
+@media(max-width:820px){.hero{grid-template-columns:1fr}}
+.hero h1{font-size:clamp(31px,4.6vw,50px);font-weight:900;letter-spacing:-.03em;line-height:1.05}
+.hero h1 span{color:var(--brand)}
+.hero p{font-size:18px;color:#475569;margin-top:16px;font-weight:500}
+.hero .btns{margin-top:26px;display:flex;gap:11px;flex-wrap:wrap}
+.b{display:inline-block;padding:13px 21px;border-radius:9px;font-weight:700;font-size:16px;text-decoration:none;cursor:pointer;border:none;font-family:inherit}
+.b.p{background:var(--brand);color:#fff}
+.b.s{background:#fff;color:var(--ink);border:1.5px solid #d8e0e8}
+.trust{margin-top:20px;font-size:14.5px;color:var(--slate);font-weight:600}
+.shot{background:#F1F5F9;border-radius:16px;height:250px;display:flex;align-items:center;justify-content:center;color:#94A3B8;font-weight:700;font-size:15px;border:1px solid #e6ebf0}
+.svcs{padding:16px 0 60px}
+.svcs h2{font-size:27px;font-weight:900;margin-bottom:22px}
+.grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+@media(max-width:820px){.grid{grid-template-columns:1fr}}
+.svc{border:1px solid #e6ebf0;border-radius:13px;padding:22px}
+.svc h3{font-size:18px;font-weight:800;margin-bottom:7px}
+.svc p{font-size:15.5px;color:#475569;font-weight:500}
+footer{border-top:1px solid #eef2f6;padding:26px 0;font-size:14px;color:var(--slate)}
+/* CHAT */
+.bubble{position:fixed;right:22px;bottom:22px;width:60px;height:60px;border-radius:50%;background:var(--brand);color:#fff;display:flex;align-items:center;justify-content:center;font-size:26px;cursor:pointer;box-shadow:0 10px 28px rgba(15,23,42,.28);z-index:60;border:none}
+.panel{position:fixed;right:22px;bottom:22px;width:378px;max-width:calc(100vw - 30px);height:558px;max-height:calc(100vh - 40px);background:#fff;border-radius:17px;box-shadow:0 24px 64px rgba(15,23,42,.3);display:none;flex-direction:column;overflow:hidden;z-index:70}
+.panel.on{display:flex}
+.phead{background:var(--brand);color:#fff;padding:15px 17px;display:flex;align-items:center;gap:11px}
+.phead .av{width:35px;height:35px;border-radius:50%;background:rgba(255,255,255,.22);display:flex;align-items:center;justify-content:center;font-size:17px}
+.phead b{font-size:15.5px;display:block}
+.phead span{font-size:12.5px;opacity:.9}
+.phead .x{margin-left:auto;cursor:pointer;font-size:21px;opacity:.9;background:none;border:none;color:#fff}
+.body{flex:1;overflow-y:auto;padding:17px;background:#F8FAFC}
+.msg{max-width:84%;padding:11px 14px;border-radius:14px;font-size:15px;margin-bottom:9px;white-space:pre-line;font-weight:500}
+.msg.bot{background:#fff;border:1px solid #e6ebf0;border-bottom-left-radius:4px}
+.msg.me{background:var(--brand);color:#fff;margin-left:auto;border-bottom-right-radius:4px}
+.chips{display:flex;flex-wrap:wrap;gap:7px;margin:2px 0 12px}
+.chip{background:#fff;border:1.5px solid var(--brand);color:var(--brand);font-size:13.5px;font-weight:700;padding:8px 12px;border-radius:17px;cursor:pointer;font-family:inherit}
+.typing{display:flex;gap:4px;padding:12px 14px;background:#fff;border:1px solid #e6ebf0;border-radius:14px;width:fit-content;margin-bottom:9px}
+.typing i{width:7px;height:7px;background:#cbd5e1;border-radius:50%;animation:bl 1.2s infinite}
+.typing i:nth-child(2){animation-delay:.2s}.typing i:nth-child(3){animation-delay:.4s}
+@keyframes bl{50%{opacity:.3;transform:translateY(-2px)}}
+.foot{border-top:1px solid #eef2f6;padding:11px;display:flex;gap:8px;background:#fff}
+.foot input{flex:1;border:1px solid #e2e8f0;border-radius:9px;padding:11px 13px;font-size:15px;font-family:inherit;outline:none}
+.foot input:focus{border-color:var(--brand)}
+.foot button{background:var(--brand);color:#fff;border:none;border-radius:9px;padding:0 15px;font-size:17px;cursor:pointer}
+.owner{position:fixed;inset:0;background:rgba(15,23,42,.62);display:none;align-items:center;justify-content:center;z-index:90;padding:20px}
+.owner.on{display:flex}
+.ocard{background:#0B1120;border-radius:17px;max-width:520px;width:100%;padding:30px;color:#E2E8F0}
+.ocard h3{color:#fff;font-size:21px;font-weight:800;margin-bottom:5px}
+.ocard .s{color:#64748B;font-size:14.5px;margin-bottom:19px}
+.lead{background:#0D1B2E;border:2px solid #22C55E;border-radius:13px;padding:18px}
+.lead .t{color:#22C55E;font-size:13px;font-weight:800;letter-spacing:.08em;margin-bottom:11px}
+.lead .r{font-family:'JetBrains Mono',monospace;font-size:15px;line-height:1.8;color:#F1F5F9}
+.lead .r span{color:#64748B}
+.ocard button{margin-top:19px;width:100%;background:var(--brand);color:#fff;border:none;padding:12px;border-radius:9px;font-weight:700;font-size:15.5px;cursor:pointer;font-family:inherit}
+</style>
+</head>
+<body>
+
+<div class="banner">Demo built for <b>Nova Detailing</b> by Apex Agents — this is your website with an assistant on it. Nothing here is live.</div>
+
+<div class="wrap">
+  <div class="top">
+    <div class="logo">N</div>
+    <div class="bizname">Nova Detailing</div>
+    <div class="nav"><span>Services</span><span>Areas</span><span>Reviews</span><span>Contact</span></div>
+  </div>
+
+  <div class="hero">
+    <div>
+      <h1>Leeds's mobile detailing, <span>we come to you</span></h1>
+      <p>Straightforward car detailing & valeting across Leeds. Quoted before we start, turn up when we say we will, and someone answers whatever time you get in touch.</p>
+      <div class="btns">
+        <button class="b p" onclick="openChat()">Get an instant quote</button>
+        <a class="b s" href="#svcs">Our services</a>
+      </div>
+      <div class="trust">✓ Covering Leeds and surrounding areas &nbsp;·&nbsp; ✓ Quoted before we start</div>
+    </div>
+    <div class="shot">your photos would sit here</div>
+  </div>
+
+  <div class="svcs" id="svcs">
+    <h2>What we do</h2>
+    <div class="grid"><div class="svc"><h3>Full valet inside & out</h3><p>Deep clean, machine polish and interior detail at your home or work.</p></div>
+      <div class="svc"><h3>Ceramic coating</h3><p>Long-life paint protection, applied and cured properly.</p></div>
+      <div class="svc"><h3>Pre-sale prep</h3><p>Get the car looking its best before it's photographed and listed.</p></div></div>
+  </div>
+</div>
+
+<footer><div class="wrap">Nova Detailing · Leeds · Demo page built by Apex Agents — apexagentsystems.co</div></footer>
+
+<button class="bubble" id="bub" onclick="openChat()">💬</button>
+
+<div class="panel" id="panel">
+  <div class="phead">
+    <div class="av">💬</div>
+    <div><b>Nova assistant</b><span>Online — replies instantly</span></div>
+    <button class="x" onclick="closeChat()">×</button>
+  </div>
+  <div class="body" id="bodyEl"></div>
+  <div class="foot">
+    <input id="inp" placeholder="Type your message…" onkeydown="if(event.key==='Enter')send()">
+    <button onclick="send()">➤</button>
+  </div>
+</div>
+
+<div class="owner" id="ownerEl">
+  <div class="ocard">
+    <h3>What Nova gets, instantly</h3>
+    <div class="s">Sent to your phone and inbox the moment the chat finishes — even at 11pm.</div>
+    <div class="lead">
+      <div class="t">✓ NEW ENQUIRY</div>
+      <div class="r" id="leadOut"></div>
+    </div>
+    <button onclick="document.getElementById('ownerEl').classList.remove('on')">Close</button>
+  </div>
+</div>
+
+<script>
+const BIZ="Nova Detailing", SHORT="Nova", TOWN="Leeds";
+const EMERGENCY=`We keep a couple of weekend slots back each week. Tell me your car and postcode and I'll check what's left.`;
+const bodyEl=document.getElementById('bodyEl');
+let lead={}, step=null;
+
+function openChat(){document.getElementById('panel').classList.add('on');document.getElementById('bub').style.display='none';if(!bodyEl.children.length)greet();}
+function closeChat(){document.getElementById('panel').classList.remove('on');document.getElementById('bub').style.display='flex';}
+function el(c,h){const d=document.createElement('div');d.className=c;d.innerHTML=h;bodyEl.appendChild(d);bodyEl.scrollTop=bodyEl.scrollHeight;return d;}
+function me(t){el('msg me',t);}
+function typing(){return el('typing','<i></i><i></i><i></i>');}
+function bot(t,chips,delay){const w=typing();setTimeout(()=>{w.remove();el('msg bot',t);if(chips){const c=el('chips','');chips.forEach(([lab,fn])=>{const b=document.createElement('button');b.className='chip';b.textContent=lab;b.onclick=()=>{c.remove();me(lab);fn();};c.appendChild(b);});}bodyEl.scrollTop=bodyEl.scrollHeight;},delay||900);}
+
+function greet(){bot(`Hi — I'm the ${SHORT} assistant, here 24/7. I can answer questions or get you a quote in about a minute.\n\nWhat can I help with?`,[['Get a quote',askUrgency],['Any slots this weekend?',emergency],['Do you cover my area?',area]],500);}
+function emergency(){bot(EMERGENCY+`\n\nShall I take your details and get someone to call you straight back?`,[['Yes please',()=>{lead.urgency='URGENT';askName();}],['Just a quote for now',askUrgency]]);}
+function area(){bot(`We cover ${TOWN} and the surrounding area. Tell me your postcode and I'll confirm straight away.`,[['Get a quote',askUrgency]]);}
+function askUrgency(){bot('How soon do you need this doing?',[['As soon as possible',()=>{lead.urgency='ASAP';askPostcode();}],['Within a week',()=>{lead.urgency='This week';askPostcode();}],['Just pricing for now',()=>{lead.urgency='Pricing only';askPostcode();}]]);}
+function askPostcode(){step='postcode';bot("What's your postcode?");}
+function askName(){step='name';bot('And your name?');}
+function askPhone(){step='phone';bot('Best number to reach you on?');}
+function finish(){
+  bot(`Thanks ${lead.name.split(' ')[0]} — that's everything.\n\n${SHORT} has your details now and will be in touch. Because this came through the assistant, it landed on their phone the second we finished, not tomorrow morning.`,[['See what the owner receives →',showOwner]],1100);
+}
+function showOwner(){
+  document.getElementById('leadOut').innerHTML =
+    `<span>name&nbsp;&nbsp;&nbsp;&nbsp;</span>${lead.name}<br>`+
+    `<span>tel&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>${lead.phone}<br>`+
+    `<span>area&nbsp;&nbsp;&nbsp;&nbsp;</span>${lead.postcode}<br>`+
+    `<span>urgency&nbsp;</span>${lead.urgency}<br>`+
+    `<span>time&nbsp;&nbsp;&nbsp;&nbsp;</span>${new Date().toLocaleTimeString('en-GB',{hour:'2-digit',minute:'2-digit'})}`;
+  document.getElementById('ownerEl').classList.add('on');
+}
+function send(){
+  const i=document.getElementById('inp'); const v=i.value.trim(); if(!v)return; i.value=''; me(v);
+  if(step==='postcode'){lead.postcode=v.toUpperCase();step=null;askName();return;}
+  if(step==='name'){lead.name=v;step=null;askPhone();return;}
+  if(step==='phone'){lead.phone=v;step=null;finish();return;}
+  bot(`Good question — the team can answer that properly. Shall I take your details so they can come back to you?`,[['Yes, go ahead',askUrgency]]);
+}
+</script>
+</body>
+</html>

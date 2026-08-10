@@ -1,0 +1,386 @@
+<!DOCTYPE html>
+<html lang="en-GB">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>The Recruiter Time Leak Calculator — Apex Agents</title>
+<meta name="description" content="Work out what admin is costing your desk, and how many placements that time is worth. Built on published UK recruitment data. Change every assumption yourself.">
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@500;600;700&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --ink:#071120; --ink2:#122238; --line:rgba(148,163,184,.20);
+  --paper:#F6F8FB; --muted:#64748B; --text:#1E293B;
+  --acc:#06D7F0; --accd:#04343F; --good:#16A34A; --warn:#D97706;
+}
+body{font-family:'Outfit',system-ui,sans-serif;background:var(--paper);color:var(--text);line-height:1.55;-webkit-font-smoothing:antialiased}
+.wrap{max-width:1120px;margin:0 auto;padding:0 24px}
+a{color:inherit}
+
+/* header */
+header{background:var(--ink);color:#fff;padding:18px 0}
+.hrow{display:flex;align-items:center;gap:12px}
+.hrow .nm{font-size:19px;font-weight:800;letter-spacing:.04em}
+.hrow .sp{margin-left:auto;font-size:15px;color:#94A3B8;font-weight:600}
+
+/* hero */
+.hero{background:var(--ink);color:#fff;padding:46px 0 60px}
+.eyebrow{display:inline-block;background:rgba(6,215,240,.12);border:1px solid rgba(6,215,240,.35);color:var(--acc);
+  font-size:13px;font-weight:800;letter-spacing:.1em;padding:7px 13px;border-radius:99px;margin-bottom:20px}
+h1{font-size:clamp(38px,5.6vw,62px);line-height:1.02;font-weight:900;letter-spacing:-.035em;max-width:15ch}
+h1 em{font-style:normal;color:var(--acc)}
+.lede{font-size:clamp(17px,2vw,21px);color:#CBD5E1;max-width:60ch;margin-top:20px;font-weight:500}
+.srcline{margin-top:22px;font-size:14px;color:#7C8BA1;max-width:70ch}
+.srcline a{color:#94A3B8;text-decoration:underline;text-underline-offset:2px}
+
+/* calculator */
+.calc{background:#fff;border-radius:20px;box-shadow:0 24px 60px rgba(7,17,32,.16);margin-top:-34px;position:relative;z-index:2;overflow:hidden}
+.calcgrid{display:grid;grid-template-columns:1fr 1fr}
+@media(max-width:900px){.calcgrid{grid-template-columns:1fr}}
+.inputs{padding:36px 34px}
+.results{background:var(--ink);color:#fff;padding:36px 34px}
+.sect{font-size:12px;font-weight:800;letter-spacing:.14em;color:var(--muted);margin-bottom:18px}
+.results .sect{color:#64748B}
+
+.f{margin-bottom:20px}
+.f label{display:block;font-size:15px;font-weight:700;margin-bottom:7px;color:var(--text)}
+.f .hint{font-size:13px;color:var(--muted);font-weight:500;margin-top:5px;line-height:1.4}
+.f input[type=number]{width:100%;font-family:'JetBrains Mono',monospace;font-size:21px;font-weight:700;
+  padding:12px 14px;border:2px solid #E2E8F0;border-radius:11px;background:#fff;color:var(--text);outline:none}
+.f input[type=number]:focus{border-color:var(--acc)}
+.f input[type=range]{width:100%;margin-top:8px;accent-color:var(--acc)}
+.rowv{display:flex;align-items:baseline;gap:8px}
+.rowv .pct{font-family:'JetBrains Mono',monospace;font-size:19px;font-weight:700;color:var(--accd)}
+
+details.assump{margin-top:8px;border-top:1px solid #E2E8F0;padding-top:18px}
+details.assump summary{cursor:pointer;font-size:14px;font-weight:800;color:var(--accd);letter-spacing:.02em}
+details.assump .body{padding-top:16px}
+
+/* results */
+.big{font-family:'JetBrains Mono',monospace;font-size:clamp(40px,6vw,58px);font-weight:700;line-height:1;letter-spacing:-.03em;color:var(--acc)}
+.biglab{font-size:15px;font-weight:700;color:#94A3B8;margin-top:9px}
+.split{border-top:1px solid rgba(148,163,184,.22);margin:24px 0;padding-top:24px}
+.work{font-family:'JetBrains Mono',monospace;font-size:15px;line-height:1.95;color:#CBD5E1}
+.work b{color:#fff;font-weight:700}
+.work .eq{color:var(--acc)}
+.upside{background:#0B2318;border:1px solid rgba(34,197,94,.4);border-radius:13px;padding:18px 20px;margin-top:22px}
+.upside .t{font-size:13px;font-weight:800;letter-spacing:.1em;color:#4ADE80;margin-bottom:9px}
+.upside .n{font-family:'JetBrains Mono',monospace;font-size:30px;font-weight:700;color:#BBF7D0;line-height:1.15}
+.upside .d{font-size:14px;color:#86EFAC;margin-top:7px;font-weight:500}
+.caveat{font-size:13px;color:#7C8BA1;margin-top:20px;line-height:1.5}
+.sanity{display:none;margin-top:18px;background:#2A1215;border:1px solid rgba(248,113,113,.5);
+  border-radius:11px;padding:14px 16px;font-size:14px;color:#FCA5A5;line-height:1.5}
+.sanity.on{display:block}
+.sanity b{color:#fff}
+
+.cta{display:block;background:var(--acc);color:var(--accd);text-align:center;font-size:17px;font-weight:800;
+  padding:17px;border-radius:12px;text-decoration:none;margin-top:24px;letter-spacing:.01em}
+.cta:hover{filter:brightness(1.07)}
+.ctasub{text-align:center;font-size:13px;color:#7C8BA1;margin-top:11px}
+
+/* honesty */
+.honest{background:#fff;border:2px solid #E2E8F0;border-radius:16px;padding:28px 30px;margin:44px 0}
+.honest h3{font-size:20px;font-weight:800;margin-bottom:12px}
+.honest p{font-size:16px;color:#475569;max-width:75ch;margin-bottom:11px}
+.honest p:last-child{margin-bottom:0}
+.honest b{color:var(--text)}
+
+/* next */
+.next{padding:56px 0 20px}
+.next h2{font-size:clamp(27px,3.6vw,38px);font-weight:900;letter-spacing:-.025em;margin-bottom:10px}
+.next .sub{font-size:17px;color:#475569;max-width:62ch;margin-bottom:30px}
+.steps{display:grid;grid-template-columns:repeat(3,1fr);gap:18px}
+@media(max-width:860px){.steps{grid-template-columns:1fr}}
+.step{background:#fff;border:2px solid #E2E8F0;border-radius:15px;padding:24px 22px;position:relative}
+.step.hi{border-color:var(--ink);box-shadow:0 10px 30px rgba(7,17,32,.09)}
+.step .n{font-family:'JetBrains Mono',monospace;font-size:13px;font-weight:700;color:var(--muted);letter-spacing:.1em}
+.step h4{font-size:20px;font-weight:800;margin:9px 0 5px;letter-spacing:-.015em}
+.step .pr{font-family:'JetBrains Mono',monospace;font-size:23px;font-weight:700;color:var(--accd);margin-bottom:10px}
+.step p{font-size:15px;color:#475569;line-height:1.5}
+.step ul{margin:11px 0 0 0;padding:0;list-style:none}
+.step li{font-size:14px;color:#475569;padding-left:19px;position:relative;margin-bottom:6px;line-height:1.45}
+.step li:before{content:"✓";position:absolute;left:0;color:var(--good);font-weight:800}
+.tagx{position:absolute;top:-11px;right:16px;background:var(--ink);color:#fff;font-size:11px;font-weight:800;
+  letter-spacing:.08em;padding:5px 11px;border-radius:99px}
+
+footer{background:var(--ink);color:#94A3B8;padding:34px 0;margin-top:52px;font-size:14px}
+.fr{display:flex;gap:18px;flex-wrap:wrap;align-items:center}
+.fr .b{font-weight:800;color:#fff;letter-spacing:.04em}
+.fr .sp{margin-left:auto}
+footer a{color:var(--acc);text-decoration:none;font-weight:600}
+</style>
+</head>
+<body>
+
+<header><div class="wrap"><div class="hrow">
+  <svg width="30" height="30" viewBox="0 0 100 100" fill="none"><path d="M18 82 L50 26 L82 82" stroke="#06D7F0" stroke-width="9" stroke-linejoin="round" stroke-linecap="round"/><path d="M37.5 82 L50 60 L62.5 82" stroke="#06D7F0" stroke-width="9" stroke-linejoin="round" stroke-linecap="round"/><circle cx="50" cy="13" r="6.5" fill="#06D7F0"/></svg>
+  <div class="nm">APEX AGENTS</div>
+  <div class="sp">info@apexagentsystems.co</div>
+</div></div></header>
+
+<section class="hero"><div class="wrap">
+  <div class="eyebrow">FOR UK RECRUITMENT AGENCIES</div>
+  <h1>Your consultants are billing <em>less than you think</em>.</h1>
+  <p class="lede">Not because they are slow. Because roughly half of every vacancy is admin — sifting, chasing, scheduling, writing up. Put your own numbers in and see what that time is worth, and how many placements it could have been.</p>
+  <p class="srcline">Built on Totaljobs / Stepstone research with 748 UK HR and hiring leaders, which measured <b>17.7 hours of admin per vacancy</b> and put the cost at <b>£17,000 per recruiter per year</b>. Every assumption below is editable — if you think a number is wrong, change it and watch the answer move.</p>
+</div></section>
+
+<div class="wrap">
+<div class="calc"><div class="calcgrid">
+
+  <div class="inputs">
+    <div class="sect">YOUR DESK</div>
+
+    <div class="f">
+      <label for="cons">Fee-earning consultants</label>
+      <input type="number" id="cons" value="6" min="1" max="500" step="1">
+      <div class="hint">Anyone who works vacancies. Exclude pure resourcers if they cost less — you can adjust the hourly rate below.</div>
+    </div>
+
+    <div class="f">
+      <label for="vac">Live vacancies worked per consultant, per month</label>
+      <input type="number" id="vac" value="4" min="1" max="200" step="1">
+      <div class="hint">Roles actively worked, not just placed. Most desks manage four to six at a time properly.</div>
+    </div>
+
+    <div class="f">
+      <label for="fee">Average placement fee (£)</label>
+      <input type="number" id="fee" value="6000" min="100" max="200000" step="100">
+      <div class="hint">Your average invoice per placement, permanent or the margin equivalent on a contract.</div>
+    </div>
+
+    <div class="f">
+      <label for="fill">Fill rate — vacancies worked that end in a placement</label>
+      <div class="rowv"><span class="pct" id="fillv">25%</span></div>
+      <input type="range" id="fill" value="25" min="2" max="90" step="1">
+      <div class="hint">Be honest here. It is the number that decides whether freed-up time is actually worth anything.</div>
+    </div>
+
+    <details class="assump">
+      <summary>Change the assumptions →</summary>
+      <div class="body">
+        <div class="f">
+          <label for="hrs">Admin hours per vacancy</label>
+          <input type="number" id="hrs" value="17.7" min="1" max="80" step="0.1">
+          <div class="hint">Totaljobs / Stepstone measured 17.7 across 748 UK hiring leaders.</div>
+        </div>
+        <div class="f">
+          <label for="tot">Total consultant hours per vacancy, admin included</label>
+          <input type="number" id="tot" value="35" min="2" max="300" step="1">
+          <div class="hint"><b>This one is an estimate, not from the study.</b> It is the whole job — sourcing, calls, interviews, client management, plus the admin above. It matters because extra capacity costs full consultant time, not just the admin you saved. If you track it, use your real figure.</div>
+        </div>
+        <div class="f">
+          <label for="auto">Share of that admin that is genuinely automatable</label>
+          <div class="rowv"><span class="pct" id="autov">51%</span></div>
+          <input type="range" id="auto" value="51" min="10" max="85" step="1">
+          <div class="hint">51% is the sum of the three tasks the same study broke out: 3.6h sifting applications, 2.5h scheduling interviews, 3.0h writing up notes = 9.1 of 17.7 hours.</div>
+        </div>
+        <div class="f">
+          <label for="real">How much freed time actually becomes productive</label>
+          <div class="rowv"><span class="pct" id="realv">75%</span></div>
+          <input type="range" id="real" value="75" min="30" max="100" step="5">
+          <div class="hint">Nobody converts saved minutes 1:1. Standard practice is to discount to 70–80%. We use 75%.</div>
+        </div>
+        <div class="f">
+          <label for="rate">Loaded cost per consultant hour (£)</label>
+          <input type="number" id="rate" value="25" min="8" max="200" step="1">
+          <div class="hint">A £30k salary costs about £34,500 once employer NI at 15% and pension are added, which is roughly £20/hour over ~1,740 productive hours. £25 adds normal overhead. Raise it for senior desks.</div>
+        </div>
+      </div>
+    </details>
+  </div>
+
+  <div class="results">
+    <div class="sect">WHAT IT IS COSTING YOU</div>
+    <div class="big" id="bigno">£0</div>
+    <div class="biglab">a year in consultant time spent on work that does not need a human</div>
+
+    <div class="split">
+      <div class="sect">THE WORKING</div>
+      <div class="work" id="work"></div>
+      <div class="sanity" id="sanity"></div>
+    </div>
+
+    <div class="upside">
+      <div class="t">THE PART THAT ACTUALLY MATTERS</div>
+      <div class="n" id="upno">£0</div>
+      <div class="d" id="upd"></div>
+    </div>
+
+    <p class="caveat">Saved hours are not saved cash unless you cut headcount — and you would not. That is why the number above is the one to look at: on a recruitment desk, freed time turns into placements, not redundancies.</p>
+
+    <a class="cta" id="mail" href="#">Send me these numbers →</a>
+    <p class="ctasub">Goes to info@apexagentsystems.co with your figures attached. No form, no call booking, no sales sequence.</p>
+  </div>
+
+</div></div>
+
+<div class="honest">
+  <h3>When this calculator is wrong</h3>
+  <p>If your consultants are not capacity-constrained — if they have spare hours and the bottleneck is vacancies coming in, not time to work them — then freeing up admin time gains you very little. <b>Fix the front of the funnel first.</b> Automation will not sell your service for you.</p>
+  <p>It is also wrong if your fill rate is low because of candidate quality or client behaviour rather than speed. Sifting faster does not help if the applications are not there. In that case the honest advice is to spend the money on sourcing, not on us.</p>
+  <p>Around one in five agencies we run these numbers with should not buy anything from us, and we say so. <b>A calculator that only ever returns a reason to buy is an advert, not a diagnostic.</b></p>
+</div>
+
+<section class="next">
+  <h2>If the number is big enough to bother with</h2>
+  <p class="sub">Three steps, priced up front, and you can stop after any of them. Nothing here needs a call before you know what it costs.</p>
+  <div class="steps">
+
+    <div class="step">
+      <div class="n">STEP 01</div>
+      <h4>The teardown</h4>
+      <div class="pr">Free</div>
+      <p>A short recorded walkthrough of your actual process — application to offer — with the three biggest leaks named and what each is costing.</p>
+      <ul>
+        <li>Under 10 minutes to watch</li>
+        <li>No call required</li>
+        <li>Yours whether you buy or not</li>
+      </ul>
+    </div>
+
+    <div class="step hi">
+      <div class="tagx">MOST START HERE</div>
+      <div class="n">STEP 02</div>
+      <h4>The Leak Audit</h4>
+      <div class="pr">£1,500</div>
+      <p>Five working days. We map the desk properly, interview the consultants doing the work — not just the director — and cost every step against your own figures.</p>
+      <ul>
+        <li>Written report you can hand to anyone</li>
+        <li>Ranked fixes with cost and payback</li>
+        <li>Includes what <em>not</em> to automate</li>
+        <li>£750 comes off the build if you go ahead within 60 days</li>
+      </ul>
+    </div>
+
+    <div class="step">
+      <div class="n">STEP 03</div>
+      <h4>The build</h4>
+      <div class="pr">£8,000–£15,000</div>
+      <p>Fixed price agreed in writing before anything starts. Four to six weeks. Half on signature, half when it goes live and works.</p>
+      <ul>
+        <li>You own everything we build</li>
+        <li>Written handover, no lock-in</li>
+        <li>Four weeks of free fixes after go-live</li>
+        <li>Optional care from £900/month</li>
+      </ul>
+    </div>
+
+  </div>
+</section>
+</div>
+
+<footer><div class="wrap"><div class="fr">
+  <span class="b">APEX AGENTS</span>
+  <span>Systems that give fee-earners their week back.</span>
+  <span class="sp"><a href="mailto:info@apexagentsystems.co">info@apexagentsystems.co</a></span>
+</div></div></footer>
+
+<script>
+var $ = function(id){ return document.getElementById(id); };
+var gbp = function(n){
+  return '£' + Math.round(n).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+};
+
+function calc(){
+  var cons = Math.max(1, +$('cons').value || 0);
+  var vac  = Math.max(0, +$('vac').value  || 0);
+  var fee  = Math.max(0, +$('fee').value  || 0);
+  var fill = +$('fill').value / 100;
+  var hrs  = Math.max(0, +$('hrs').value  || 0);
+  var tot  = Math.max(0, +$('tot').value  || 0);
+  var auto = +$('auto').value / 100;
+  var real = +$('real').value / 100;
+  var rate = Math.max(0, +$('rate').value || 0);
+
+  // admin cannot exceed the whole job
+  if (tot < hrs) tot = hrs;
+
+  $('fillv').textContent = $('fill').value + '%';
+  $('autov').textContent = $('auto').value + '%';
+  $('realv').textContent = $('real').value + '%';
+
+  var vacYr    = cons * vac * 12;
+  var adminYr  = vacYr * hrs;
+  var recovered= adminYr * auto * real;
+  var costYr   = recovered * rate;
+
+  // Capacity, done properly. Working an extra vacancy costs the FULL consultant
+  // hours for that vacancy, not just the admin slice we saved. So we shorten the
+  // job and re-divide the same total hours by the new, shorter job.
+  var savedPerVac = hrs * auto * real;          // hours taken out of each vacancy
+  var newPerVac   = Math.max(0.1, tot - savedPerVac);
+  var totalHours  = vacYr * tot;                 // hours the desk already works
+  var capacityNow = vacYr;
+  var capacityNew = totalHours / newPerVac;
+  var extraVac    = Math.max(0, capacityNew - capacityNow);
+  var extraPlace  = extraVac * fill;
+  var upside      = extraPlace * fee;
+
+  $('bigno').textContent = gbp(costYr);
+
+  $('work').innerHTML =
+    '<b>' + cons + '</b> consultants × <b>' + vac + '</b> vacancies × 12 months<br>' +
+    '<span class="eq">=</span> <b>' + Math.round(vacYr).toLocaleString() + '</b> vacancies worked a year<br>' +
+    '× <b>' + hrs + '</b> admin hours each<br>' +
+    '<span class="eq">=</span> <b>' + Math.round(adminYr).toLocaleString() + '</b> hours of admin<br>' +
+    '× <b>' + Math.round(auto*100) + '%</b> automatable × <b>' + Math.round(real*100) + '%</b> actually recovered<br>' +
+    '<span class="eq">=</span> <b>' + Math.round(recovered).toLocaleString() + '</b> hours back<br>' +
+    '× <b>' + gbp(rate) + '</b> an hour<br>' +
+    '<span class="eq">=</span> <b>' + gbp(costYr) + '</b> a year';
+
+  $('upno').textContent = gbp(upside);
+  $('upd').innerHTML =
+    'Each vacancy drops from <b>' + (Math.round(tot*10)/10) + 'h</b> to <b>' +
+    (Math.round(newPerVac*10)/10) + 'h</b>. The same hours then cover <b>' +
+    Math.round(capacityNew).toLocaleString() + '</b> vacancies instead of <b>' +
+    Math.round(capacityNow).toLocaleString() + '</b> — about <b>' + (Math.round(extraVac*10)/10) +
+    '</b> more. At a ' + Math.round(fill*100) + '% fill rate that is <b>' +
+    (Math.round(extraPlace*10)/10) + '</b> extra placements at ' + gbp(fee) + ' each.';
+
+  // Sanity check: do these inputs describe a week a human could actually work?
+  var needPerConsMonth = vac * tot;
+  var availPerMonth    = 37.5 * 4.33;   // a full-time week, all of it, no holiday
+  var sn = $('sanity');
+  if (needPerConsMonth > availPerMonth) {
+    sn.className = 'sanity on';
+    sn.innerHTML = 'These numbers do not add up, and we would rather say so. At <b>' + vac +
+      '</b> vacancies a month and <b>' + (Math.round(tot*10)/10) + 'h</b> each, every consultant would need <b>' +
+      Math.round(needPerConsMonth) + ' hours a month</b>. A full-time month is about <b>162</b>. ' +
+      'Either they are working fewer vacancies properly than you think, each one takes less time than the estimate, ' +
+      'or some of it is not getting done. Lower one of the two and the answer below becomes something you can defend.';
+  } else {
+    sn.className = 'sanity';
+  }
+
+  var body =
+    'Our numbers from the calculator:\n\n' +
+    'Consultants: ' + cons + '\n' +
+    'Vacancies per consultant per month: ' + vac + '\n' +
+    'Average placement fee: ' + gbp(fee) + '\n' +
+    'Fill rate: ' + Math.round(fill*100) + '%\n\n' +
+    'Admin hours a year: ' + Math.round(adminYr).toLocaleString() + '\n' +
+    'Hours recoverable: ' + Math.round(recovered).toLocaleString() + '\n' +
+    'Cost of that time: ' + gbp(costYr) + ' a year\n' +
+    'Placement value of that time: ' + gbp(upside) + ' a year\n' +
+    'Extra placements a year: ' + (Math.round(extraPlace*10)/10) + '\n\n' +
+    'Send me the free teardown.\n\nAgency name:\nWebsite:\n';
+
+  $('mail').href = 'mailto:info@apexagentsystems.co' +
+    '?subject=' + encodeURIComponent('Leak calculator — ' + gbp(upside) + ' in placement value')
+    + '&body=' + encodeURIComponent(body);
+}
+
+['cons','vac','fee','fill','hrs','tot','auto','real','rate'].forEach(function(id){
+  $(id).addEventListener('input', calc);
+});
+calc();
+</script>
+
+<div style="background:#050c17;color:#5A6B80;font-family:'Outfit',system-ui,sans-serif;font-size:12.5px;line-height:1.6;padding:18px 24px;text-align:center">
+  Apex Agents is a trading name of <b style="color:#7C8BA1">[PROPRIETOR NAME]</b>.
+  Correspondence address: <b style="color:#7C8BA1">[SERVICE ADDRESS]</b>.
+  Contact: <a href="mailto:info@apexagentsystems.co" style="color:#5A6B80">info@apexagentsystems.co</a>
+</div>
+</body>
+</html>
