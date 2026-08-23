@@ -1,0 +1,546 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>GEM Partnership — Monday morning demo</title>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@600&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{--brand:#6A2C70;--ink:#0F172A;--slate:#64748B;--line:#E2E8F0;--ok:#15803D;--warn:#B45309;--bad:#DC2626}
+html{-webkit-text-size-adjust:100%}
+body{font-family:'Outfit',sans-serif;color:var(--ink);background:#F1F5F9;line-height:1.5}
+.wrap{max-width:1020px;margin:0 auto;padding:0 16px}
+.banner{background:#0F172A;color:#CBD5E1;padding:12px 16px;font-size:13.5px;text-align:center}
+.banner b{color:#fff}
+.banner i{display:block;font-style:normal;color:#94A3B8;font-size:12.5px;margin-top:3px;line-height:1.45}
+.top{background:#fff;border-bottom:1px solid var(--line);padding:13px 0}
+.top .in{display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+.logo{width:42px;height:42px;border-radius:10px;background:var(--brand);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:900;font-size:19px;flex:none}
+.bn{font-weight:800;font-size:19px;line-height:1.2;letter-spacing:-.02em}
+.bs{font-size:12.5px;color:var(--slate);font-weight:600}
+.wk{margin-left:auto;text-align:right;font-size:12px;color:var(--slate);font-weight:700}
+.wk b{display:block;color:var(--ink);font-size:14px}
+@media(max-width:640px){.wk{margin:6px 0 0;text-align:left;width:100%}}
+.scene{background:#fff;border:1px solid var(--line);border-left:4px solid var(--brand);border-radius:12px;padding:13px 16px;margin-top:18px;font-size:15px;font-weight:700;color:#1E293B}
+.scene em{font-style:normal;display:block;color:#475569;font-weight:600;font-size:13.5px;margin-top:5px}
+.tiles{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin:14px 0 4px}
+@media(max-width:700px){.tiles{grid-template-columns:repeat(2,1fr)}}
+.tile{background:#fff;border:1px solid var(--line);border-radius:13px;padding:12px 14px}
+.tile .k{font-size:11px;font-weight:800;color:var(--slate);text-transform:uppercase;letter-spacing:.07em}
+.tile .v{font-size:29px;font-weight:900;letter-spacing:-.03em;margin-top:2px;font-variant-numeric:tabular-nums;line-height:1.15}
+.tile .n{font-size:12px;color:var(--slate);font-weight:600;min-height:17px}
+.tile.hot .v{color:var(--bad)}
+.tile.good .v{color:var(--ok)}
+.runbar{display:flex;gap:9px;flex-wrap:wrap;margin:16px 0 10px}
+.stages{display:flex;gap:8px;overflow-x:auto;padding:2px 0 8px;-webkit-overflow-scrolling:touch}
+.stages button{flex:none;background:#fff;border:1.5px solid var(--line);border-radius:22px;padding:9px 13px;font:700 14px 'Outfit',sans-serif;color:var(--slate);cursor:pointer;display:flex;align-items:center;gap:7px;white-space:nowrap}
+.stages button.on{border-color:var(--brand);color:var(--brand)}
+.stages button .num{width:20px;height:20px;border-radius:50%;background:#E2E8F0;color:#475569;font-size:11px;font-weight:800;display:flex;align-items:center;justify-content:center;flex:none}
+.stages button.on .num{background:var(--brand);color:#fff}
+.stages button.done .num{background:var(--ok);color:#fff}
+.panel{background:#fff;border:1px solid var(--line);border-radius:16px;padding:20px;margin-top:12px;display:none}
+.panel.on{display:block}
+@media(max-width:600px){.panel{padding:15px}}
+.panel h2{font-size:21px;font-weight:900;letter-spacing:-.03em;line-height:1.2}
+.stand{color:#475569;font-size:15px;font-weight:500;margin-top:6px}
+.act{margin-top:15px;display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.btn{background:var(--brand);color:#fff;border:none;border-radius:10px;padding:12px 18px;font:800 15px 'Outfit',sans-serif;cursor:pointer}
+.btn:disabled{opacity:.45;cursor:default}
+.btn.g{background:#fff;color:var(--ink);border:1.5px solid var(--line);font-weight:700}
+.log{font-size:13.5px;font-weight:600;color:var(--slate);flex:1 1 100%;min-height:20px}
+.rows{margin-top:14px;border-top:1px solid #EEF2F6}
+/* ---- the pile ---- */
+.it{display:flex;gap:11px;padding:11px 6px;border-bottom:1px solid #EEF2F6;opacity:0;transform:translateY(5px);transition:opacity .3s,transform .3s}
+.it.shown{opacity:1;transform:none}
+.kind{flex:none;width:74px;font-size:10.5px;font-weight:900;letter-spacing:.05em;text-transform:uppercase;padding:5px 0;text-align:center;border-radius:6px;height:fit-content;background:#F1F5F9;color:#475569}
+.kind.photo{background:#EDE9FE;color:#5B21B6}
+.kind.whatsapp{background:#DCFCE7;color:#166534}
+.kind.email{background:#DBEAFE;color:#1E40AF}
+.kind.text{background:#FEF3C7;color:#92400E}
+.kind.paper{background:#FFE4E6;color:#9F1239}
+.it .ct{flex:1;min-width:0}
+.it .ct b{display:block;font-size:14.5px;font-weight:700}
+.it .ct span{display:block;font-size:13.5px;color:#475569;font-weight:500;margin-top:1px}
+.it .tm{flex:none;font-size:12px;color:var(--slate);font-weight:700;font-variant-numeric:tabular-nums;padding-top:4px}
+.gapcard{margin-top:14px;background:#FEF2F2;border:1px solid #FECACA;border-radius:11px;padding:13px 15px;display:none}
+.gapcard.on{display:block}
+.gapcard b{display:block;font-size:14.5px;font-weight:800;color:#991B1B}
+.gapcard span{display:block;font-size:13.5px;color:#7F1D1D;font-weight:600;margin-top:3px}
+/* ---- matched rows ---- */
+.r{display:flex;align-items:center;gap:10px;flex-wrap:wrap;padding:10px 6px;border-bottom:1px solid #EEF2F6;font-size:14.5px;border-radius:8px;transition:background .25s}
+.r .who{flex:1 1 205px;min-width:0}
+.r .who b{font-weight:700;display:block}
+.r .who small{color:var(--slate);font-weight:600;font-size:12.5px;display:block}
+.r .mid{font-weight:700;font-variant-numeric:tabular-nums;color:#475569;font-size:13px;white-space:nowrap}
+.r .st{margin-left:auto;font-size:12px;font-weight:800;padding:5px 10px;border-radius:20px;background:#F1F5F9;color:#64748B;white-space:nowrap}
+.r.in{background:#F0FDF4}.r.in .st{background:#DCFCE7;color:#166534}
+.r.warn{background:#FFFBEB}.r.warn .st{background:#FEF3C7;color:#92400E}
+.r.bad{background:#FEF2F2}.r.bad .st{background:#FEE2E2;color:#991B1B}
+.r.call{background:#FFF7ED}.r.call .st{background:#FFEDD5;color:#9A3412}
+.r .why{flex:1 1 100%;font-size:13px;color:#7C2D12;font-weight:600;padding-top:2px}
+/* ---- exceptions ---- */
+.excs{margin-top:16px;display:grid;gap:10px}
+.exc{border:1px solid #FECACA;background:#FEF2F2;border-radius:12px;padding:13px 15px;opacity:0;transition:opacity .35s}
+.exc.shown{opacity:1}
+.exc .lab{font-size:10.5px;font-weight:900;letter-spacing:.1em;text-transform:uppercase;color:#B91C1C}
+.exc b{display:block;font-size:15.5px;font-weight:800;margin-top:3px;letter-spacing:-.01em}
+.exc span{display:block;font-size:13.5px;color:#334155;font-weight:600;margin-top:4px}
+.exc .num{font-family:'JetBrains Mono',monospace;font-size:12.5px;font-weight:600;color:#0F172A;background:#fff;border:1px solid #FECACA;border-radius:8px;padding:8px 10px;margin-top:9px;overflow-x:auto;white-space:pre}
+/* ---- the chase ---- */
+.thread{margin-top:14px;display:grid;gap:9px}
+.bub{max-width:82%;padding:11px 14px;border-radius:14px;font-size:14px;font-weight:500;white-space:pre-line;opacity:0;transition:opacity .3s}
+.bub.shown{opacity:1}
+.bub.out{background:var(--brand);color:#fff;margin-left:auto;border-bottom-right-radius:4px}
+.bub.rep{background:#fff;border:1.5px solid var(--line);border-bottom-left-radius:4px}
+.bub .hd{display:block;font-size:11px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;opacity:.75;margin-bottom:4px}
+@media(max-width:600px){.bub{max-width:94%}}
+/* ---- payroll pack ---- */
+.pay{margin-top:15px;border-top:1px solid var(--line)}
+.ph,.pr{display:flex;align-items:center;gap:8px;flex-wrap:wrap;padding:9px 6px;border-bottom:1px solid #EEF2F6}
+.ph{font-size:10.5px;font-weight:900;text-transform:uppercase;letter-spacing:.07em;color:var(--slate)}
+.pr{font-size:14.5px}
+.pw{flex:1 1 200px;min-width:0}
+.pw b{display:block;font-weight:700}
+.pw small{display:block;font-size:12.5px;color:var(--slate);font-weight:600}
+.pc{flex:none;display:flex;gap:6px;margin-left:auto}
+.pn{width:74px;text-align:right;font-variant-numeric:tabular-nums;font-weight:700;font-size:13.5px;color:#334155}
+.pn.tot{font-weight:800;color:var(--ink)}
+.pn i{display:none}
+.ph .pn{font-size:10.5px;font-weight:900;color:var(--slate)}
+@media(max-width:620px){.ph .pw,.ph .pc{display:none}.ph{display:none}
+  .pn{width:auto;min-width:64px;font-size:13px}.pn i{display:block;font-style:normal;font-size:10px;font-weight:800;color:#94A3B8;text-transform:uppercase;letter-spacing:.05em}
+  .pc{margin-left:0;margin-top:4px;gap:14px}}
+.tot{border-bottom:none}
+.ptot{display:flex;flex-wrap:wrap;gap:8px;padding:12px 6px;font-size:15px;font-weight:800;background:#F8FAFC;border-radius:0 0 10px 10px}
+.ptot .pn{font-size:15px}
+.sub{font-size:13.5px;font-weight:900;color:#9A3412;margin:20px 0 2px;letter-spacing:.01em}
+.sub.q{color:#1E293B}
+.held{border-top:1px solid #FED7AA}
+.held .r{background:#FFF7ED}
+.note{margin-top:14px;background:#F8FAFC;border:1px dashed var(--line);border-radius:10px;padding:12px 14px;font-size:13.5px;color:#475569;font-weight:600}
+.res{margin-top:15px;border-radius:12px;padding:15px 16px;background:#F0FDF4;border:1px solid #BBF7D0;font-size:14.5px;font-weight:500;color:#334155;display:none}
+.res.on{display:block}
+.res .big{font-size:17.5px;font-weight:800;color:var(--ink);display:block;margin-bottom:5px;letter-spacing:-.02em}
+.res .nx{margin-top:12px}
+/* ---- honest number ---- */
+.hd2{display:flex;gap:8px;padding:9px 6px;border-bottom:1px solid var(--line);font-size:10.5px;font-weight:900;text-transform:uppercase;letter-spacing:.07em;color:var(--slate)}
+.hr2{display:flex;gap:8px;padding:11px 6px;border-bottom:1px solid #EEF2F6;font-size:14.5px;align-items:center;flex-wrap:wrap;opacity:0;transition:opacity .3s}
+.hr2.shown{opacity:1}
+.hjob{flex:1 1 210px;font-weight:600;color:#1E293B;min-width:0}
+.hb,.hn{width:96px;text-align:right;font-variant-numeric:tabular-nums;font-weight:700;font-size:14px;flex:none}
+.hd2 .hb,.hd2 .hn{font-size:10.5px;font-weight:900}
+.hb{color:#B91C1C}.hn{color:var(--ok)}
+.hr2.same .hn{color:#475569}
+.hr2.same .hjob::after{content:' — unchanged';color:var(--slate);font-weight:700;font-size:12.5px}
+.hsum{display:flex;gap:8px;padding:13px 6px;font-size:16px;font-weight:900;background:#F8FAFC;border-radius:0 0 10px 10px;flex-wrap:wrap;align-items:center}
+.hsum .hb,.hsum .hn{font-size:17px;font-weight:900}
+@media(max-width:600px){.hb,.hn{width:78px;font-size:13.5px}}
+.caveat{margin-top:15px;background:#FFFBEB;border:1px solid #FDE68A;border-radius:11px;padding:13px 15px;font-size:13.5px;color:#78350F;font-weight:600}
+.caveat b{display:block;font-size:14px;font-weight:900;margin-bottom:4px;color:#7C2D12}
+.close{background:#0F172A;color:#E2E8F0;border-radius:16px;padding:24px;margin:14px 0 24px;display:none}
+.close.on{display:block}
+.close h2{color:#fff;font-size:21px;font-weight:900;letter-spacing:-.03em}
+.close .nums{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin:16px 0}
+@media(max-width:700px){.close .nums{grid-template-columns:repeat(2,1fr)}}
+.close .nums div b{display:block;font-size:26px;font-weight:900;color:#fff;font-variant-numeric:tabular-nums;line-height:1.2}
+.close .nums div span{font-size:12.5px;color:#94A3B8;font-weight:600}
+.close p{font-size:15px;color:#CBD5E1;font-weight:500;margin-top:4px}
+footer{border-top:1px solid var(--line);padding:22px 0 34px;font-size:13.5px;color:var(--slate);text-align:center}
+</style>
+</head>
+<body>
+
+<div class="banner">Demo built for <b>GEM Partnership</b> by Apex Agents — this is your Monday morning, handled. Nothing here is live.
+<i>Every worker, client, site, rate, hour and date on this page is invented for the demo. None of your data has been used, and none of these people exist.</i></div>
+
+<div class="top"><div class="wrap"><div class="in">
+  <div class="logo">G</div>
+  <div><div class="bn">GEM Partnership</div><div class="bs" id="tdSpec"></div></div>
+  <div class="wk"><b id="tdWk">&nbsp;</b><span id="tdBook">&nbsp;</span></div>
+</div></div></div>
+
+<div class="wrap">
+  <div class="scene" id="tdScene"></div>
+
+  <div class="tiles">
+    <div class="tile" id="tPl"><div class="k">In the pile</div><div class="v" id="vPl">—</div><div class="n" id="nPl">not opened yet</div></div>
+    <div class="tile" id="tHr"><div class="k">Hours read</div><div class="v" id="vHr">—</div><div class="n" id="nHr">nothing read yet</div></div>
+    <div class="tile" id="tEx"><div class="k">Needs a decision</div><div class="v" id="vEx">—</div><div class="n" id="nEx">not checked yet</div></div>
+    <div class="tile" id="tDo"><div class="k">Expiring in 30 days</div><div class="v" id="vDo">—</div><div class="n" id="nDo">not checked yet</div></div>
+  </div>
+
+  <div class="runbar">
+    <button class="btn" id="runAll" onclick="runMonday()">Run the whole Monday</button>
+    <button class="btn g" id="resetAll" onclick="resetMonday()">Start again</button>
+  </div>
+
+  <div class="stages" id="stages">
+    <button class="on" id="sb0" onclick="goStage(0)"><span class="num">1</span>The pile</button>
+    <button id="sb1" onclick="goStage(1)"><span class="num">2</span>Read &amp; matched</button>
+    <button id="sb2" onclick="goStage(2)"><span class="num">3</span>The chase</button>
+    <button id="sb3" onclick="goStage(3)"><span class="num">4</span>Payroll pack</button>
+    <button id="sb4" onclick="goStage(4)"><span class="num">5</span>What it costs</button>
+  </div>
+
+  <div class="panel on" id="p0">
+    <h2 id="h0"></h2><div class="stand" id="d0"></div>
+    <div class="act"><button class="btn" id="b0" onclick="runPile()"></button><div class="log" id="l0"></div></div>
+    <div class="rows" id="r0"></div>
+    <div class="gapcard" id="noneCard"></div>
+    <div class="res" id="x0"></div>
+  </div>
+
+  <div class="panel" id="p1">
+    <h2 id="h1"></h2><div class="stand" id="d1"></div>
+    <div class="act"><button class="btn" id="b1" onclick="runRead()"></button><div class="log" id="l1"></div></div>
+    <div class="rows" id="r1"></div>
+    <div class="excs" id="e1"></div>
+    <div class="res" id="x1"></div>
+  </div>
+
+  <div class="panel" id="p2">
+    <h2 id="h2h"></h2><div class="stand" id="d2"></div>
+    <div class="act"><button class="btn" id="b2" onclick="runChase()"></button><div class="log" id="l2"></div></div>
+    <div class="thread" id="r2"></div>
+    <div class="rows" id="r2b"></div>
+    <div class="res" id="x2"></div>
+  </div>
+
+  <div class="panel" id="p3">
+    <h2 id="h3"></h2><div class="stand" id="d3"></div>
+    <div class="act"><button class="btn" id="b3" onclick="runPack()"></button><div class="log" id="l3"></div></div>
+    <div id="payEl"></div>
+    <div id="heldEl"></div>
+    <div id="compEl"></div>
+    <div class="res" id="x3"></div>
+  </div>
+
+  <div class="panel" id="p4">
+    <h2 id="h4"></h2><div class="stand" id="d4"></div>
+    <div class="act"><button class="btn" id="b4" onclick="runHand()"></button><div class="log" id="l4"></div></div>
+    <div id="handEl"></div>
+    <div class="caveat" id="caveatEl"></div>
+    <div class="res" id="x4"></div>
+  </div>
+
+  <div class="close" id="closeEl">
+    <h2 id="clH"></h2>
+    <div class="nums" id="clN"></div>
+    <p id="clP"></p>
+  </div>
+</div>
+
+<footer>GEM Partnership · Peterlee · Demo built by Apex Agents — apexagentsystems.co · illustrative data only, nothing here is live · Apex Agents is a trading name of Apex Agent Systems Ltd, registered in England and Wales no. 17410168, registered office 167-169 Great Portland Street, 5th Floor, London, W1W 5PF</footer>
+
+<script>
+
+const BIZ="GEM Partnership", SHORT="GEM", TOWN="Peterlee";
+const TD={"spec":"industrial, manufacturing, engineering and food production desks","where":"Peterlee, Newton Aycliffe, Washington, Gateshead, Billingham and Seaham","book":71,"sites":10,"docs":168,"close":"Tuesday 4pm","scene":"Monday, 08:20. Two of the three offices are inside client sites, so half of last week’s hours start out on somebody else’s premises.","sceneSub":"The onsite coordinators collect sheets in between filling roles, and head office keys them in. Everything below arrived over the weekend.","s0":{"head":"Monday’s pile","stand":"Everything that has come in since Friday — from the workers, from the two onsite desks and from the clients’ own offices. Nothing sorted, nothing read, nothing keyed in.","btn":"Open Monday’s pile","log":"Opening everything that came in over the weekend — photos, messages, emails, and whatever was dropped into the office.","noneHead":"{NONE} workers · nothing at all","noneNote":"No photo, no message, no sheet, no paper. All {NONE} were booked and all {NONE} were on site.","res":{"big":"{PILE_N} separate things, covering {COVERED} of {CREW} workers.","body":"{FORMATS} different formats, no two the same shape, and {NONE} workers who have sent nothing at all. This is the part that normally eats the first two hours of the week — before a single hour has been checked against a single booking."}},"s1":{"head":"Read, and put next to what you booked","stand":"Every sheet read and every number set against the shifts that were actually booked. Three things do not line up.","btn":"Read the pile","log":"Reading each one and matching the hours back to the booking — worker, site, shift pattern, rate.","res":{"big":"{READ_H} hours read. Three things need you.","body":"Everything that matched is finished and needs nothing from anybody. The three below are the ones that cost money if they go through unnoticed: hours nobody authorised, a shift nobody has any paperwork for, and a document that runs out mid-assignment."}},"exc":{"over":{"lab":"Over the booking","t":"{OV_N} has claimed {OV_DIFF} hours more than {OV_SITE} booked","d":"The booking was {OV_BK} hours. The sheet says {OV_HRS}. There is no authorisation written against the difference. Paid as it stands it goes out this week, and it gets queried on the invoice in three weeks when nobody can remember what happened.","num":"booked    {OV_BK} hrs\nclaimed   {OV_HRS} hrs\n          ---------\nover      {OV_DIFF} hrs   =  {OV_MONEY} nobody has signed off","hold":"Held. {OV_DIFF} hrs over the booking, {OV_MONEY} carried by you until {OV_SITE} confirms it either way."},"gap":{"lab":"No sheet at all","t":"{GAP_SITE}, {GAP_WHEN} — booked, worked, and no timesheet from anyone","d":"The shift is on the booking and somebody signed on for it at the gate. Nothing has come in from the worker, from the site or from the office. This is the one nobody catches, because there is nothing sitting there to catch.","num":"{GAP_HRS} hrs booked and worked\n 0.0 hrs of paperwork behind them\n      =  {GAP_MONEY} that never reaches the invoice","hold":"Held. {GAP_HRS} hrs at {GAP_SITE} with nothing behind them — {GAP_MONEY} of charge that will not be invoiced unless somebody puts it there."},"rtw":{"lab":"Runs out in {RTW_DAYS} days","t":"{RTW_N} — {RTW_DOC} expires in {RTW_DAYS} days","d":"That date falls inside the assignment {RTW_SITE} has already booked. On the day it runs out they stop being somebody you can lawfully supply, and the first anyone usually hears about it is when the client asks. The follow-up check is due on the expiry date itself, not whenever somebody next opens the folder."}},"chase":{"head":"The {NONE} who sent nothing","stand":"Each one gets their own message — their name, their site, the shifts that were booked. Replies come back into the same place as everything else.","btn":"Send the chase","log":"One message each. Not a group text, and not a reminder to send a reminder.","at":"08:15","wait":"Waiting. Nothing else on the desk has to stop while this happens.","msg":"Morning {FIRST} — {SHORT} here. We have you down for {SHIFTS} shifts at {SITE} last week, {BK} hours booked, and we have not had your sheet. Reply with your hours day by day, or send a photo of the sheet, and it goes straight onto this week’s pay run.","callHead":"These {LEFT} need a person, not another message.","res":{"big":"{REP_N} came back at {REP_AT} with {REP_H} hours. {LEFT} left to ring.","body":"One message, one reply, straight onto the run — nobody typed anything and nobody had to remember to follow it up. The {LEFT} below are on the call list with the reason already attached, so whoever picks up the phone knows what they are ringing about before they dial."}},"s3":{"head":"Ready for payroll","stand":"Worker, site, hours, rate, total. Anything that does not add up is held out underneath it — in front of you, not buried inside the total.","btn":"Build the payroll pack","log":"Pulling every sheet, every rate and every document into one pack.","payHead":"Ready to pay — {PAY_N} workers","heldHead":"Held for your decision — {HELD_N} lines, none of them in the total above","compHead":"{SOON} expiring in the next 30 days · {GONE} already expired","compNote":"{DOCS} documents across {BOOK} workers, checked against today’s date rather than against somebody’s memory. Time-limited right to work is re-checked on its own expiry date — follow-up checks are exactly what a labour-supply audit asks to see.","res":{"big":"{PAY_M} across {PAY_N} workers, ready to go.","body":"That is the pack payroll can work straight from — {PAY_H} hours, every line already sat against the right client, the right site and the right rate, so nothing has to be keyed in twice. The {HELD_N} held lines are not hidden inside the total; they are underneath it with the reason and the number attached. {SOON} documents need attention in the next 30 days."},"goneNote":"Ran out part-way through a live assignment. Comes off next week's booking on its own until it is replaced."},"s4":{"head":"What Monday costs","stand":"Our estimate for a run this size. It is an estimate, not a measurement, and it is not your number yet.","btn":"Show the comparison","log":"Adding up the same Monday, done both ways.","res":{"big":"About {BY_T} by hand. About {NOW_T} this way.","body":"Two of those lines do not move at all and we have left them in. The calls still have to be made and somebody still has to read the pack before it goes. What changes is the part that is pure keying and pure chasing."}},"hand":{"rows":[["Collecting and reading {CREW} sheets in {FORMATS} different formats",55,0],["Chasing the {NONE} who sent nothing",40,2],["Checking claimed hours against what was booked",35,6],["Keying the hours into the payroll sheet",30,0],["Checking right to work, licences and tickets",25,4],["The {LEFT} calls that still have to be made",15,15],["Reading the pack before it goes to payroll",10,10]],"caveatHead":"This is an estimate. It should be replaced with your real numbers.","caveat":"These figures are ours, not yours — a deliberately conservative guess at one Monday for a run of {CREW} workers. We have not multiplied it up across your book of {BOOK}, we have not put a pound figure on anybody’s time, and we are not claiming it as a result. Give us one real Monday and we will replace every number in this table with what actually happened, including the two lines that do not move."},"cl":{"h":"That was Monday.","nums":["things in the pile","hours read and matched","lines held for you","documents expiring in 30 days"],"p":"None of the people or numbers on this page are real. The shape of it is: a mixed pile, hours that do not match the booking, workers who sent nothing, and a payroll deadline that does not move. If that is roughly your Monday, the next step is a short call where we run yours instead of this one."},"workers":[{"n":"Craig Easington","role":"Production operative","site":"Aycliffe Press & Tool","via":"photo","sh":5,"bk":40,"hrs":40,"rate":12.71},{"n":"Sylwia Nowakowska","role":"Food production operative","site":"Billingham Process Foods","via":"whatsapp","sh":5,"bk":37.5,"hrs":37.5,"rate":12.9},{"n":"Aidan Horden","role":"Counterbalance driver","site":"Washington Cold Store","via":"photo","sh":5,"bk":42.5,"hrs":42.5,"rate":14.6,"flag":"rtw"},{"n":"Marcin Wolski","role":"Press operator","site":"Aycliffe Press & Tool","via":"email","sh":5,"bk":39.5,"hrs":39.5,"rate":13.4},{"n":"Chantelle Murton","role":"Packing operative","site":"Billingham Process Foods","via":"whatsapp","sh":4,"bk":30,"hrs":30,"rate":12.71},{"n":"Declan Shotton","role":"Fabricator’s mate","site":"Seaham Fabrication","via":"text","sh":5,"bk":36,"hrs":36,"rate":14.85},{"n":"Oksana Melnyk","role":"Line operative","site":"Billingham Process Foods","via":"photo","sh":5,"bk":41,"hrs":41,"rate":12.9},{"n":"Ryan Blackhall","role":"Warehouse operative","site":"Gateshead Distribution","via":"email","sh":5,"bk":38.5,"hrs":38.5,"rate":12.71},{"n":"Lewis Trimdon","role":"Reach truck driver","site":"Washington Cold Store","via":"photo","sh":5,"bk":40,"hrs":48,"rate":15.1,"flag":"over"},{"n":"Bogdan Ilie","role":"Press operator","site":"Aycliffe Press & Tool","via":"paper","sh":5,"bk":40,"hrs":40,"rate":13.4},{"n":"Kirsty Wingate","role":"Goods-in clerk","site":"Gateshead Distribution","via":"whatsapp","sh":4,"bk":33.5,"hrs":33.5,"rate":12.71},{"n":"Femi Adeyemi","role":"Warehouse operative","site":"Washington Cold Store","via":"none","sh":6,"bk":46,"hrs":null,"rate":12.71,"no":true,"tel":"07700 900318","why":"Booked six shifts including the Saturday. Phone off since Thursday. The Saturday is the one with no paperwork anywhere."},{"n":"Hollie Ferryhill","role":"Food production operative","site":"Billingham Process Foods","via":"none","sh":4,"bk":32,"hrs":null,"rate":12.9,"no":true,"tel":"07700 900274","why":"Phone rings out. The site says she worked all four shifts, so her hours have to come off the gate log, not off another reminder."},{"n":"Tadeusz Roman","role":"Fabricator’s mate","site":"Seaham Fabrication","via":"none","sh":5,"bk":45,"hrs":null,"rate":14.85,"no":true,"reply":{"at":"08:37","hrs":45,"via":"whatsapp","text":"\"sorry, sheet is on the onsite desk at Aycliffe. 45 — 9 mon, 9 tue, 9 wed, 9 thu, 9 fri\""}}],"gap":{"site":"Washington Cold Store","when":"Saturday 06:00–14:00","who":"Femi Adeyemi","hrs":8,"charge":22.8},"pile":[{"k":"photo","from":"Craig Easington","at":"06:47","d":"IMG_3390.HEIC — sheet held against a van window. Bottom two rows cut off.","covers":["Craig Easington"]},{"k":"whatsapp","from":"Sylwia Nowakowska","at":"07:06","d":"\"nights all week, 6 on 6 off. 48 total. ask the site if your not sure\"","covers":["Sylwia Nowakowska"]},{"k":"photo","from":"Lewis Trimdon","at":"07:19","d":"IMG_2277.jpg — sheet against a van door. Saturday added at the bottom in different ink, unsigned.","covers":["Lewis Trimdon"]},{"k":"email","from":"Aycliffe onsite desk","at":"07:28","d":"\"AYCL wk hours.xlsx\" — typed up on site from two paper sheets. Two of yours in it, no rates, no shift pattern, one name spelled two ways.","covers":["Marcin Wolski","Ryan Blackhall"]},{"k":"text","from":"Declan Shotton","at":"07:38","d":"\"36 hrs same as last week cheers\"","covers":["Declan Shotton"]},{"k":"whatsapp","from":"Chantelle Murton","at":"07:44","d":"A photo of a sheet, then a second one because the first was blurred, then \"second one is right\".","covers":["Chantelle Murton"]},{"k":"photo","from":"Oksana Melnyk","at":"07:56","d":"IMG_0904.jpg — sheet on a bench by the line. Two days signed by the shift manager, three not.","covers":["Oksana Melnyk"]},{"k":"whatsapp","from":"Kirsty Wingate","at":"08:03","d":"\"33.5 total. Weds I finished at 2 not 6, no lorries in\"","covers":["Kirsty Wingate"]},{"k":"photo","from":"Aidan Horden","at":"08:11","d":"IMG_3361.jpg — legible, signed, in on time. The one that needs nothing doing to it.","covers":["Aidan Horden"]},{"k":"paper","from":"Bogdan Ilie","at":"Fri 15:50","d":"Left on the onsite desk at Aycliffe on Friday. Collected this morning with the post.","covers":["Bogdan Ilie"]}],"comp":[{"n":"Sylwia Nowakowska","doc":"Level 2 food hygiene","ref":"GM-4022","d":6},{"n":"Aidan Horden","doc":"Right to work — time-limited leave","ref":"GM-4013","d":9,"rtw":true},{"n":"Declan Shotton","doc":"Safety passport","ref":"GM-4108","d":15},{"n":"Oksana Melnyk","doc":"Manual handling","ref":"GM-4061","d":28},{"n":"Lewis Trimdon","doc":"Reach truck licence","ref":"GM-4137","d":-5},{"n":"Bogdan Ilie","doc":"Abrasive wheels","ref":"GM-4044","d":191}]};
+const $=i=>document.getElementById(i);
+const esc=v=>String(v==null?'':v).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+const sleep=n=>new Promise(r=>setTimeout(r,n));
+const RM=!!(window.matchMedia&&window.matchMedia('(prefers-reduced-motion: reduce)').matches);
+const ms=n=>RM?0:n;
+const done={pile:false,read:false,chase:false,pack:false,hand:false};
+window.TD_DONE=done;
+let busy=false, replied=false;
+
+/* ---- one source of truth: everything below is computed from TD.workers, so
+       no number on the page can disagree with any other number on the page ---- */
+const W=TD.workers.map(o=>Object.assign({},o));
+const PILE=TD.pile, COMP=TD.comp, GAP=TD.gap, HAND=TD.hand;
+const NOS=W.filter(w=>w.no);
+const REP=NOS.filter(w=>w.reply)[0]||null;
+const LEFT=NOS.filter(w=>!w.reply);
+const OVW=W.filter(w=>w.flag==='over')[0]||null;
+const RTW=W.filter(w=>w.flag==='rtw')[0]||null;
+const RTWDOC=COMP.filter(c=>c.rtw)[0]||null;
+const covered=[];PILE.forEach(p=>(p.covers||[]).forEach(n=>{if(covered.indexOf(n)<0)covered.push(n);}));
+const kinds=[];PILE.forEach(p=>{if(kinds.indexOf(p.k)<0)kinds.push(p.k);});
+const nSoon=COMP.filter(c=>c.d>=0&&c.d<=30).length, nGone=COMP.filter(c=>c.d<0).length;
+
+const num=v=>{const n=Number(v);return isFinite(n)?n:0;};
+const gbp=n=>'£'+num(n).toLocaleString('en-GB',{minimumFractionDigits:2,maximumFractionDigits:2});
+const hx=n=>num(n).toFixed(1);
+const mn=m=>{const t=Math.round(num(m)),h=Math.floor(t/60),r=t%60;
+  return h?(h+' hr'+(h>1?'s':'')+(r?' '+r+' min':'')):(r+' min');};
+const KIND={photo:'Photo',whatsapp:'WhatsApp',email:'Email',text:'Text',paper:'Paper'};
+const VIA={photo:'photo of a sheet',whatsapp:'a message',email:'a spreadsheet',text:'a text',paper:'a paper sheet'};
+
+const paidNow=()=>W.filter(w=>w.hrs!=null&&w.flag!=='over');
+const p2=n=>Math.round(num(n)*100)/100;
+const line=w=>p2(num(w.hrs)*num(w.rate));
+const sumH=a=>a.reduce((t,w)=>t+num(w.hrs),0);
+/* sum the pennies that are actually printed on each line, not the unrounded
+   product — a pay column that does not add up to its own total is the fastest
+   way to lose someone who checks payroll for a living */
+const sumP=a=>a.reduce((t,w)=>t+line(w),0);
+const readH=()=>sumH(W.filter(w=>w.hrs!=null));
+const heldList=()=>{
+  const out=[];
+  if(OVW)out.push({n:OVW.n,s:OVW.site,st:'Over by '+hx(num(OVW.hrs)-num(OVW.bk))+' hrs',
+    why:TD.exc.over.hold});
+  /* this line is a shift, not a person — labelled as one so it does not read as
+     a duplicate of the worker it was booked for */
+  out.push({n:GAP.site+' · '+GAP.when,s:'Shift booked for '+GAP.who+' — no sheet from the worker, the site or the office',
+    st:'No sheet at all',why:TD.exc.gap.hold});
+  LEFT.forEach(w=>out.push({n:w.n,s:w.site,st:'Nothing received',why:w.why+'  ·  '+w.tel}));
+  return out;
+};
+const byMins=HAND.rows.reduce((t,r)=>t+num(r[1]),0);
+const nowMins=HAND.rows.reduce((t,r)=>t+num(r[2]),0);
+
+const N={BIZ:BIZ,SHORT:SHORT,TOWN:TOWN,BOOK:num(TD.book).toLocaleString('en-GB'),SITES:TD.sites,
+  DOCS:num(TD.docs).toLocaleString('en-GB'),WHERE:TD.where,CLOSE:TD.close,
+  PILE_N:PILE.length,COVERED:covered.length,CREW:W.length,NONE:NOS.length,LEFT:LEFT.length,
+  FORMATS:kinds.length,HELD_N:heldList().length,EXC_N:3,SOON:nSoon,GONE:nGone,COMP_N:COMP.length,
+  OV_N:OVW?OVW.n:'',OV_SITE:OVW?OVW.site:'',OV_BK:OVW?hx(OVW.bk):'0.0',OV_HRS:OVW?hx(OVW.hrs):'0.0',
+  OV_DIFF:OVW?hx(num(OVW.hrs)-num(OVW.bk)):'0.0',OV_MONEY:OVW?gbp((num(OVW.hrs)-num(OVW.bk))*num(OVW.rate)):gbp(0),
+  GAP_SITE:GAP.site,GAP_WHEN:GAP.when,GAP_WHO:GAP.who,GAP_HRS:hx(GAP.hrs),GAP_MONEY:gbp(num(GAP.hrs)*num(GAP.charge)),
+  RTW_N:RTW?RTW.n:'',RTW_SITE:RTW?RTW.site:'',RTW_DOC:RTWDOC?RTWDOC.doc:'',RTW_DAYS:RTWDOC?RTWDOC.d:0,
+  REP_N:REP?REP.n:'',REP_FIRST:REP?REP.n.split(' ')[0]:'',REP_AT:REP?REP.reply.at:'',REP_H:REP?hx(REP.reply.hrs):'0.0',
+  BY_T:mn(byMins),NOW_T:mn(nowMins),SAVED_T:mn(byMins-nowMins)};
+/* these four move as the demo runs — a reply lands, the pack grows — so they are
+   read at the moment a line is written, never cached */
+const dynN=()=>({READ_H:hx(readH()),PAY_N:paidNow().length,
+  PAY_H:hx(sumH(paidNow())),PAY_M:gbp(sumP(paidNow()))});
+window.TD_N=N; window.TD_LIVE=dynN; window.TD_DATA=TD; window.TD_W=W;
+const T=s=>{const M=Object.assign({},N,dynN());
+  return String(s==null?'':s).replace(/\{(\w+)\}/g,(m,k)=>k in M?M[k]:m);};
+
+/* ---- dates are worked from today, so the demo is never stale ---- */
+const NOW=new Date();
+const LASTFRI=(()=>{const d=new Date(NOW);d.setDate(d.getDate()-((d.getDay()+2)%7));return d;})();
+const dLong=d=>d.toLocaleDateString('en-GB',{day:'numeric',month:'long'});
+const dShort=d=>d.toLocaleDateString('en-GB',{day:'2-digit',month:'short',year:'numeric'});
+const dPlus=n=>{const d=new Date(NOW);d.setDate(d.getDate()+num(n));return d;};
+
+function tile(k,v,n,cls){$('v'+k).textContent=v;$('n'+k).textContent=n;$('t'+k).className='tile'+(cls?' '+cls:'');}
+function log(i,s){$('l'+i).textContent=T(s);}
+function stage(i,on){$('sb'+i).classList.toggle('done',!!on);}
+function result(i,r,next){
+  $('x'+i).innerHTML='<span class="big">'+esc(T(r.big))+'</span>'+esc(T(r.body))+
+    (next?'<div class="nx"><button class="btn g" onclick="'+next[1]+'">'+esc(next[0])+'</button></div>':'');
+  $('x'+i).className='res on';
+}
+function goStage(i){for(let k=0;k<5;k++){$('p'+k).classList.toggle('on',k===i);$('sb'+k).classList.toggle('on',k===i);}}
+function scrollToStages(){const y=$('stages').getBoundingClientRect().top+window.pageYOffset-16;window.scrollTo({top:y<0?0:y,behavior:RM?'auto':'smooth'});}
+
+/* ---------------- 1. the pile as it actually arrives ---------------- */
+function drawPile(){
+  $('r0').innerHTML=PILE.map((p,i)=>'<div class="it" id="it'+i+'">'+
+    '<div class="kind '+esc(p.k)+'">'+esc(KIND[p.k]||p.k)+'</div>'+
+    '<div class="ct"><b>'+esc(T(p.from))+'</b><span>'+esc(T(p.d))+'</span></div>'+
+    '<div class="tm">'+esc(p.at)+'</div></div>').join('');
+  $('noneCard').className='gapcard';
+}
+async function runPile(){
+  if(busy)return; busy=true; done.pile=false;
+  const b=$('b0'); b.disabled=true; b.textContent='Opening…';
+  drawPile(); $('x0').className='res'; stage(0,false);
+  log(0,TD.s0.log);
+  for(let i=0;i<PILE.length;i++){
+    await sleep(ms(150)); $('it'+i).classList.add('shown');
+    tile('Pl',i+1,'things to open','hot');
+  }
+  await sleep(ms(400));
+  tile('Pl',PILE.length,'covering '+covered.length+' of '+W.length+' workers','hot');
+  $('noneCard').innerHTML='<b>'+esc(T(TD.s0.noneHead))+'</b><span>'+
+    esc(NOS.map(w=>w.n+' ('+w.site+')').join(' · '))+'</span><span>'+esc(T(TD.s0.noneNote))+'</span>';
+  $('noneCard').className='gapcard on';
+  log(0,'');
+  result(0,TD.s0.res,['Next — read them','goStage(1)']);
+  stage(0,true); b.disabled=false; b.textContent='Open it again'; done.pile=true; busy=false;
+}
+
+/* ---------------- 2. read, and matched against the booking ---------------- */
+function drawRead(){
+  $('r1').innerHTML=W.map((w,i)=>'<div class="r" id="w'+i+'">'+
+    '<div class="who"><b>'+esc(w.n)+'</b><small>'+esc(w.role)+' · '+esc(w.site)+'</small></div>'+
+    '<div class="mid" id="wm'+i+'">'+hx(w.bk)+' hrs booked</div>'+
+    '<div class="st">Not read</div></div>').join('');
+  $('e1').innerHTML='';
+}
+function paintRow(i){
+  const w=W[i], e=$('w'+i); if(!e)return;
+  e.className='r';
+  if(w.hrs==null){ e.classList.add('bad');
+    $('wm'+i).textContent=hx(w.bk)+' hrs booked · nothing read';
+    e.querySelector('.st').textContent='No sheet'; return; }
+  $('wm'+i).textContent=hx(w.hrs)+' hrs read · '+hx(w.bk)+' booked';
+  if(w.flag==='over'){ e.classList.add('warn');
+    e.querySelector('.st').textContent='Over by '+hx(num(w.hrs)-num(w.bk))+' hrs'; }
+  else { e.classList.add('in');
+    e.querySelector('.st').textContent='Matches · '+(VIA[w.via]||'sent in'); }
+}
+async function runRead(){
+  if(busy)return; busy=true; done.read=false;
+  const b=$('b1'); b.disabled=true; b.textContent='Reading…';
+  drawRead(); $('x1').className='res'; stage(1,false);
+  log(1,TD.s1.log);
+  let h=0;
+  for(let i=0;i<W.length;i++){ await sleep(ms(110)); paintRow(i);
+    h+=num(W[i].hrs); tile('Hr',hx(h),'read from the pile','good'); }
+  await sleep(ms(350));
+  const cards=[TD.exc.over,TD.exc.gap,TD.exc.rtw];
+  $('e1').innerHTML=cards.map((c,i)=>'<div class="exc" id="ex'+i+'">'+
+    '<div class="lab">'+esc(T(c.lab))+'</div><b>'+esc(T(c.t))+'</b>'+
+    '<span>'+esc(T(c.d))+'</span>'+(c.num?'<div class="num">'+esc(T(c.num))+'</div>':'')+'</div>').join('');
+  for(let i=0;i<cards.length;i++){ await sleep(ms(420)); $('ex'+i).classList.add('shown');
+    tile('Ex',i+1,'do not line up','hot'); }
+  log(1,'');
+  result(1,TD.s1.res,['Next — chase the missing '+NOS.length,'goStage(2)']);
+  stage(1,true); b.disabled=false; b.textContent='Read them again'; done.read=true; busy=false;
+}
+
+/* ---------------- 3. the chase ---------------- */
+function msgFor(w){
+  return T(TD.chase.msg).replace(/\{FIRST\}/g,w.n.split(' ')[0]).replace(/\{NAME\}/g,w.n)
+    .replace(/\{SITE\}/g,w.site).replace(/\{SHIFTS\}/g,w.sh).replace(/\{BK\}/g,hx(w.bk));
+}
+function drawChase(){ $('r2').innerHTML=''; $('r2b').innerHTML=''; }
+async function runChase(){
+  if(busy)return; busy=true; done.chase=false;
+  const b=$('b2'); b.disabled=true; b.textContent='Sending…';
+  drawChase(); $('x2').className='res'; stage(2,false);
+  log(2,TD.chase.log);
+  const add=(cls,html)=>{const d=document.createElement('div');d.className='bub '+cls;d.innerHTML=html;
+    $('r2').appendChild(d);requestAnimationFrame(()=>d.classList.add('shown'));return d;};
+  for(let i=0;i<NOS.length;i++){ await sleep(ms(500));
+    add('out','<span class="hd">Sent '+esc(TD.chase.at)+' · to '+esc(NOS[i].n)+'</span>'+esc(msgFor(NOS[i])));
+  }
+  if(REP){
+    await sleep(ms(900)); log(2,T(TD.chase.wait));
+    await sleep(ms(1100));
+    add('rep','<span class="hd">'+esc(REP.n)+' replied · '+esc(REP.reply.at)+'</span>'+esc(REP.reply.text));
+    REP.hrs=num(REP.reply.hrs); REP.via=REP.reply.via||'whatsapp'; replied=true;
+    const i=W.indexOf(REP); if(i>=0)paintRow(i);
+    tile('Hr',hx(readH()),'read from the pile','good');
+  }
+  await sleep(ms(400));
+  $('r2b').innerHTML='<div class="sub">'+esc(T(TD.chase.callHead))+'</div>'+
+    LEFT.map(w=>'<div class="r call"><div class="who"><b>'+esc(w.n)+'</b><small>'+esc(w.role)+' · '+esc(w.site)+'</small></div>'+
+    '<div class="mid">'+hx(w.bk)+' hrs booked</div><div class="st">Needs a call</div>'+
+    '<div class="why">'+esc(T(w.why))+'  ·  '+esc(w.tel)+'</div></div>').join('');
+  log(2,'');
+  result(2,TD.chase.res,['Next — the payroll pack','goStage(3)']);
+  stage(2,true); b.disabled=false; b.textContent='Send it again'; done.chase=true; busy=false;
+}
+
+/* ---------------- 4. the payroll pack ---------------- */
+async function runPack(){
+  if(busy)return; busy=true; done.pack=false;
+  const b=$('b3'); b.disabled=true; b.textContent='Building…';
+  $('x3').className='res'; $('closeEl').className='close'; stage(3,false);
+  $('payEl').innerHTML=''; $('heldEl').innerHTML=''; $('compEl').innerHTML='';
+  log(3,TD.s3.log);
+  await sleep(ms(500));
+
+  const pay=paidNow();
+  $('payEl').innerHTML='<div class="sub q">'+esc(T(TD.s3.payHead))+'</div><div class="pay">'+
+    '<div class="ph"><div class="pw">Worker · site</div><div class="pc">'+
+    '<span class="pn">Hours</span><span class="pn">Rate</span><span class="pn">Total</span></div></div>'+
+    pay.map(w=>'<div class="pr"><div class="pw"><b>'+esc(w.n)+'</b><small>'+esc(w.role)+' · '+esc(w.site)+'</small></div>'+
+      '<div class="pc"><span class="pn"><i>hrs</i>'+hx(w.hrs)+'</span>'+
+      '<span class="pn"><i>rate</i>'+gbp(w.rate)+'</span>'+
+      '<span class="pn tot"><i>total</i>'+gbp(line(w))+'</span></div></div>').join('')+
+    '<div class="ptot"><div class="pw">'+pay.length+' workers ready to pay</div><div class="pc">'+
+    '<span class="pn"><i>hours</i>'+hx(sumH(pay))+'</span>'+
+    '<span class="pn tot"><i>gross</i>'+gbp(sumP(pay))+'</span></div></div></div>';
+
+  await sleep(ms(600));
+  const held=heldList();
+  $('heldEl').innerHTML='<div class="sub">'+esc(T(TD.s3.heldHead))+'</div><div class="held">'+
+    held.map(x=>'<div class="r"><div class="who"><b>'+esc(x.n)+'</b><small>'+esc(x.s)+'</small></div>'+
+      '<div class="st">'+esc(x.st)+'</div><div class="why">'+esc(T(x.why))+'</div></div>').join('')+'</div>';
+  tile('Ex',held.length,'held out of the pack','hot');
+
+  await sleep(ms(600));
+  const flagged=COMP.filter(c=>c.d<=30).slice().sort((a,b)=>a.d-b.d);
+  $('compEl').innerHTML='<div class="sub">'+esc(T(TD.s3.compHead))+'</div><div class="rows">'+
+    flagged.map(c=>'<div class="r '+(c.d<0?'bad':'warn')+'">'+
+      '<div class="who"><b>'+esc(c.n)+'</b><small>'+esc(c.doc)+' · ref '+esc(c.ref)+'</small></div>'+
+      '<div class="mid">'+dShort(dPlus(c.d))+'</div>'+
+      '<div class="st">'+(c.d<0?('Expired '+(-c.d)+' days ago'):('Expires in '+c.d+' days'))+'</div>'+
+      (c.d<0?'<div class="why">'+esc(T(TD.s3.goneNote))+'</div>':'')+'</div>').join('')+
+    '</div><div class="note">'+esc(T(TD.s3.compNote))+'</div>';
+  tile('Do',nSoon,nGone+' already expired','hot');
+  tile('Pl',PILE.length,'all read and filed');
+  log(3,'');
+  result(3,TD.s3.res,['Last — what this costs by hand','goStage(4)']);
+  stage(3,true); b.disabled=false; b.textContent='Build it again'; done.pack=true; busy=false;
+}
+
+/* ---------------- 5. the honest number ---------------- */
+async function runHand(){
+  if(busy)return; busy=true; done.hand=false;
+  const b=$('b4'); b.disabled=true; b.textContent='Adding it up…';
+  $('x4').className='res'; stage(4,false);
+  $('handEl').innerHTML='<div class="hd2"><div class="hjob">Monday job</div>'+
+    '<div class="hb">By hand</div><div class="hn">This way</div></div>'+
+    HAND.rows.map((r,i)=>'<div class="hr2'+(num(r[1])===num(r[2])?' same':'')+'" id="hr'+i+'">'+
+      '<div class="hjob">'+esc(T(r[0]))+'</div>'+
+      '<div class="hb">'+esc(mn(r[1]))+'</div>'+
+      '<div class="hn">'+esc(num(r[2])===0?'—':mn(r[2]))+'</div></div>').join('')+
+    '<div class="hsum" id="hsum" style="opacity:0"><div class="hjob">One Monday, start to finish</div>'+
+    '<div class="hb">'+esc(mn(byMins))+'</div><div class="hn">'+esc(mn(nowMins))+'</div></div>';
+  log(4,TD.s4.log);
+  for(let i=0;i<HAND.rows.length;i++){ await sleep(ms(220)); $('hr'+i).classList.add('shown'); }
+  await sleep(ms(350)); $('hsum').style.opacity='1';
+  $('caveatEl').innerHTML='<b>'+esc(T(HAND.caveatHead))+'</b>'+esc(T(HAND.caveat));
+  log(4,'');
+  result(4,TD.s4.res,['See the whole morning in one line','showClose()']);
+  stage(4,true); b.disabled=false; b.textContent='Add it up again'; done.hand=true; busy=false;
+  await sleep(ms(700)); showClose();
+}
+
+function showClose(){
+  $('clH').textContent=T(TD.cl.h);
+  const L=dynN();
+  const vals=[N.PILE_N,L.READ_H,N.HELD_N,N.SOON];
+  $('clN').innerHTML=TD.cl.nums.map((lab,i)=>'<div><b>'+esc(vals[i])+'</b><span>'+esc(T(lab))+'</span></div>').join('');
+  $('clP').textContent=T(TD.cl.p);
+  $('closeEl').className='close on';
+  $('closeEl').scrollIntoView({behavior:RM?'auto':'smooth',block:'center'});
+}
+
+/* ---------------- drive it all ---------------- */
+async function runMonday(){
+  if(busy)return;
+  resetMonday(); scrollToStages();
+  goStage(0); await runPile(); await sleep(ms(700)); scrollToStages();
+  goStage(1); await runRead(); await sleep(ms(700)); scrollToStages();
+  goStage(2); await runChase(); await sleep(ms(700)); scrollToStages();
+  goStage(3); await runPack(); await sleep(ms(700)); scrollToStages();
+  goStage(4); await runHand();
+}
+function resetMonday(){
+  busy=false; replied=false;
+  done.pile=done.read=done.chase=done.pack=done.hand=false;
+  W.forEach((w,i)=>{const o=TD.workers[i];w.hrs=o.hrs;w.via=o.via;});
+  drawPile(); drawRead(); drawChase();
+  $('payEl').innerHTML=''; $('heldEl').innerHTML=''; $('compEl').innerHTML='';
+  $('handEl').innerHTML=''; $('caveatEl').innerHTML='';
+  const btns=[TD.s0,TD.s1,TD.chase,TD.s3,TD.s4];
+  for(let i=0;i<5;i++){$('x'+i).className='res';$('l'+i).textContent='';stage(i,false);
+    const b=$('b'+i); b.disabled=false; b.textContent=T(btns[i].btn);}
+  tile('Pl',PILE.length,'not opened yet');
+  tile('Hr','—','nothing read yet');
+  tile('Ex','—','not checked yet');
+  tile('Do','—','not checked yet');
+  $('closeEl').className='close';
+  goStage(0);
+}
+(function init(){
+  $('tdSpec').textContent=T(TD.spec)+' · '+T(TD.where);
+  $('tdWk').textContent='Week ending Friday '+dLong(LASTFRI);
+  $('tdBook').textContent=N.BOOK+' workers out · '+TD.sites+' client sites';
+  $('tdScene').innerHTML='<span>'+esc(T(TD.scene))+'</span><em>'+esc(T(TD.sceneSub))+'</em>';
+  const P=[TD.s0,TD.s1,TD.chase,TD.s3,TD.s4], H=['h0','h1','h2h','h3','h4'];
+  P.forEach((s,i)=>{$(H[i]).textContent=T(s.head);$('d'+i).textContent=T(s.stand);});
+  resetMonday();
+})();
+</script>
+</body>
+</html>
