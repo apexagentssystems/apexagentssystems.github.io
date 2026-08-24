@@ -1,0 +1,9 @@
+User-agent: *
+Disallow: /impact-recruitment.html
+Disallow: /sky-recruitment.html
+Disallow: /alliance-personnel.html
+Disallow: /gem-partnership.html
+Disallow: /dbr-group.html
+Allow: /
+
+Sitemap: https://apexagentsystems.co/sitemap.xml
